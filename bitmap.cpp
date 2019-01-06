@@ -197,8 +197,8 @@ int ReadBitmap(const char * file, Bitmap * bitmap)
 void checkbmp(const char * file)
 {
 	FILE * f = fopen(file, "rb");
-	byte bytes[256];
-	unsigned len = fread(bytes, sizeof(char), 256, f);
+	byte bytes[132272];
+	unsigned len = fread(bytes, sizeof(char), 132272, f);
 	fclose(f);
 
 	BITMAPFILEHEADER bitmap = CreateBMFH(bytes);

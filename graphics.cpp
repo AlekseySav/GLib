@@ -23,6 +23,15 @@ Image CreateImage(long width, long height, RGB * target, RGB fill)
 	return CreateImage(width, height, target);
 }
 
+POINT::POINT(long x, long y)
+{
+	this->x = x;
+	this->y = y;
+}
+
+POINT::POINT()
+{ }
+
 RGB::RGB(byte red, byte green, byte blue)
 {
 	r = red;
@@ -51,7 +60,10 @@ RGBA::RGBA(RGB rgb, byte alpha)
 
 RGBA::RGBA(RGB rgb)
 {
-	RGBA(rgb, 255);
+	r = rgb.r;
+	g = rgb.g;
+	b = rgb.b;
+	a = 255;
 }
 
 RGBA::RGBA()
@@ -86,52 +98,98 @@ RGBA Pixcel(RGBA clr, RGBA add, IMAGE_TYPE type)
 	return Pixcel(clr, add);
 }
 
-void DrawPoint(long x, long y, RGB fill, Image * ptr)
+void Image::DrawPoint(POINT p, RGB fill)
 {
-	RGB * point = ((RGB *)ptr->image + y * ptr->width + x);
+	if (p.x >= width || p.x < 0 || p.y >= height || p.y < 0) return;
+
+	RGB * point = ((RGB *)this->image + p.y * this->width + p.x);
 	*point = fill;
-	if (ptr->type == IMAGE_RGBA) *((byte *)point + 3) = 255;
+	if (this->type == IMAGE_RGBA) *((byte *)point + 3) = 255;
 }
 
-void DrawPoint(long x, long y, RGBA fill, Image * ptr)
+void Image::DrawPoint(POINT p, RGBA fill)
 {
-	if (ptr->type == IMAGE_RGB)
+	if (p.x >= width || p.x < 0 || p.y >= height || p.y < 0) return;
+
+	if (this->type == IMAGE_RGB)
 	{
-		RGB * point = ((RGB *)ptr->image + y * ptr->width + x);
+		RGB * point = ((RGB *)this->image + p.y * this->width + p.x);
 		RGB clr = Pixcel(*point, fill);
 		*point = clr;
 	}
 	else
 	{
-		RGBA * point = ((RGBA *)ptr->image + y * ptr->width + x);
+		RGBA * point = ((RGBA *)this->image + p.y * this->width + p.x);
 		RGBA clr = Pixcel(*point, fill);
 		*point = clr;
 	}
 }
 
-void DrawLine(long x0, long y0, long x1, long y1, Image * image, RGBA color)
+void Image::FillSquare(POINT p, long side, RGBA clr)
 {
-	bool reversed = (x1 - x0 < y1 - y0);
+	if (side == 1)
+	{
+		DrawPoint(p, clr);
+		return;
+	}
+
+	for (long y = 0; y < side; y++)
+		for (long x = 0; x < side; x++)
+			DrawPoint(POINT(p.x + x, p.y + y), clr);
+}
+
+void Image::FillRectangle(POINT p1, POINT p2, RGBA color)
+{
+	if (p1.x > p2.x) MOVE_VARIBLES(p1.x, p2.x);
+	if (p1.y > p2.y) MOVE_VARIBLES(p1.y, p2.y);
+
+	for (long y = p1.y; y < p2.y; y++)
+		for (long x = p1.x; x < p2.x; x++)
+			DrawPoint(POINT(x, y), color);
+}
+
+long abs(long x)
+{
+	if (x >= 0) return x;
+	return -x;
+}
+
+void Image::DrawLine(POINT p1, POINT p2, RGBA color, long wide)
+{
+	if (p1.x >= width) p1.x = width - 1;
+	if (p1.y >= height) p1.y = height - 1;
+	if (p2.x >= width) p2.x = width - 1;
+	if (p2.y >= height) p2.y = height - 1;
+
+	bool reversed = (abs(p2.x - p1.x) < abs(p2.y - p1.y));
 	if (reversed)
 	{
-		MOVE_VARIBLES(x0, y0);
-		MOVE_VARIBLES(x1, y1);
+		MOVE_VARIBLES(p1.x, p1.y);
+		MOVE_VARIBLES(p2.x, p2.y);
 	}
 
-	if (x0 >= x1)
+	if (p1.x >= p2.x)
 	{
-		MOVE_VARIBLES(x0, x1);
-		MOVE_VARIBLES(y0, y1);
+		MOVE_VARIBLES(p1.x, p2.x);
+		MOVE_VARIBLES(p1.y, p2.y);
 	}
 
-	float alpha = (float)(y1 - y0) / (x1 - x0);
+	long dx = p2.x - p1.x, dy = p2.y - p1.y;
 
-	for (int x = x0; x < x1; x++)
+	for (long x = p1.x; x <= p2.x; x++)
 	{
-		int y = (int)(alpha * (x - x0) + y0 - 1);
+		long y = (long)(dy * (x - p1.x) / dx + p1.y);
 		if (reversed)
-			DrawPoint(y, x, color, image);
+			this->FillSquare(POINT(y - wide / 2, x - wide / 2), wide, color);
 		else
-			DrawPoint(x, y, color, image);
+			this->FillSquare(POINT(x - wide / 2, y - wide / 2), wide, color);
 	}
+}
+
+void Image::DrawRectangle(POINT p1, POINT p2, RGBA color, long wide)
+{
+	DrawLine(POINT(p1.x, p1.y), POINT(p2.x, p1.y), color, wide);
+	DrawLine(POINT(p1.x, p1.y), POINT(p1.x, p2.y), color, wide);
+	DrawLine(POINT(p2.x, p2.y), POINT(p2.x, p1.y), color, wide);
+	DrawLine(POINT(p2.x, p2.y), POINT(p1.x, p2.y), color, wide);
 }
