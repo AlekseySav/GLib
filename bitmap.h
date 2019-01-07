@@ -16,6 +16,7 @@ struct BITMAPFILEHEADER
 	word    bfReserved2;
 	dword   bfOffBits;
 };
+
 BITMAPFILEHEADER CreateBMFH(byte[14]);
 void value(BITMAPFILEHEADER *, byte *);
 
@@ -44,6 +45,7 @@ struct Bitmap
 	byte * palette;
 	byte * image;
 };
+
 #define BF_BITMAP 0x4D42
 
 #define BI_RGB        0L
@@ -64,12 +66,45 @@ Bitmap CreateBitmap(Image * image);
 int WriteBitmap(const char * file, Bitmap * bitmap);
 int ReadBitmap(const char * file, Bitmap * bitmap);
 
-
-
+#ifdef __CHECKING__
 #ifdef _DEBUG
 #include <iostream>
 
-void checkbmp(const char * file);
+void checkbmp(const char * file)
+{
+	FILE * f = fopen(file, "rb");
+	byte bytes[__CHECKING__];
+	unsigned len = fread(bytes, sizeof(char), __CHECKING__, f);
+	fclose(f);
+
+	BITMAPFILEHEADER bitmap = CreateBMFH(bytes);
+	BITMAPINFOHEADER info = CreateBMIH(bytes + 14);
+
+	std::cout << bitmap.bfType << ' ';
+	std::cout << bitmap.bfSize << ' ';
+	std::cout << bitmap.bfReserved1 << ' ';
+	std::cout << bitmap.bfReserved2 << ' ';
+	std::cout << bitmap.bfOffBits << '\n';
+
+	std::cout << info.biSize << ' ';
+	std::cout << info.biWidth << ' ';
+	std::cout << info.biHeight << ' ';
+	std::cout << info.biPlanes << ' ';
+	std::cout << info.biBitCount << ' ';
+	std::cout << info.biCompression << ' ';
+	std::cout << info.biSizeImage << ' ';
+	std::cout << info.biXPelsPerMeter << ' ';
+	std::cout << info.biYPelsPerMeter << ' ';
+	std::cout << info.biClrUsed << ' ';
+	std::cout << info.biClrImportant << '\n';
+
+	for (unsigned i = 54; i < len; i++)
+	{
+		char z = bytes[i];
+		printf("%d ", z);
+	}
+}
+#endif
 #endif
 
 #endif

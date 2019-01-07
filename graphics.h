@@ -12,21 +12,19 @@ struct POINT
 	long x, y;
 
 	POINT(long x, long y);
-	POINT();
 };
 
 struct RGB
 {
 	byte b, g, r;
-	RGB(byte red, byte green, byte blue);
-	RGB();
 };
+RGB SetRGB(byte red, byte green, byte blue);
 
-const RGB RGB_BLACK = RGB(0, 0, 0);
-const RGB RGB_WHITE = RGB(255, 255, 255);
-const RGB RGB_RED = RGB(255, 0, 0);
-const RGB RGB_GREEN = RGB(0, 255, 0);
-const RGB RGB_BLUE = RGB(0, 0, 255);
+const RGB RGB_BLACK = SetRGB(0, 0, 0);
+const RGB RGB_WHITE = SetRGB(255, 255, 255);
+const RGB RGB_RED = SetRGB(255, 0, 0);
+const RGB RGB_GREEN = SetRGB(0, 255, 0);
+const RGB RGB_BLUE = SetRGB(0, 0, 255);
 
 struct RGBA
 {
@@ -34,7 +32,6 @@ struct RGBA
 	RGBA(byte red, byte green, byte blue, byte alpha);
 	RGBA(RGB rgb, byte alpha);
 	RGBA(RGB rgb);
-	RGBA();
 	RGB getRGB();
 };
 
@@ -55,9 +52,11 @@ struct Image
 
 	void FillSquare(POINT left_upstairs, long side, RGBA clr);
 	void FillRectangle(POINT p1, POINT p2, RGBA color);
+	void FillTriangle(POINT p1, POINT p2, POINT p3, RGBA color);
 
 	void DrawLine(POINT p1, POINT p2, RGBA color, long wide = 1L);
 	void DrawRectangle(POINT p1, POINT p2, RGBA color, long wide = 1L);
+	void DrawTriangle(POINT p1, POINT p2, POINT p3, RGBA color, long wide = 1L);
 };
 
 Image CreateImage(long width, long height, RGB * target);

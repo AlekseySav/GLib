@@ -29,18 +29,14 @@ POINT::POINT(long x, long y)
 	this->y = y;
 }
 
-POINT::POINT()
-{ }
-
-RGB::RGB(byte red, byte green, byte blue)
+RGB SetRGB(byte red, byte green, byte blue)
 {
-	r = red;
-	g = green;
-	b = blue;
+	RGB rgb;
+	rgb.r = red;
+	rgb.g = green;
+	rgb.b = blue;
+	return rgb;
 }
-
-RGB::RGB()
-{ }
 
 RGBA::RGBA(byte red, byte green, byte blue, byte alpha)
 {
@@ -66,17 +62,14 @@ RGBA::RGBA(RGB rgb)
 	a = 255;
 }
 
-RGBA::RGBA()
-{ }
-
 RGB RGBA::getRGB()
 {
-	return RGB(r, g, b);
+	return SetRGB(r, g, b);
 }
 
 RGB Pixcel(RGB clr, RGBA add)
 {
-	return RGB(
+	return SetRGB(
 		(clr.r * (255 - add.a) + add.r * add.a) / 255,
 		(clr.g * (255 - add.a) + add.g * add.a) / 255,
 		(clr.b * (255 - add.a) + add.b * add.a) / 255);
@@ -148,6 +141,11 @@ void Image::FillRectangle(POINT p1, POINT p2, RGBA color)
 			DrawPoint(POINT(x, y), color);
 }
 
+void FillTriangle(POINT p1, POINT p2, POINT p3, RGBA color)
+{
+
+}
+
 long abs(long x)
 {
 	if (x >= 0) return x;
@@ -192,4 +190,11 @@ void Image::DrawRectangle(POINT p1, POINT p2, RGBA color, long wide)
 	DrawLine(POINT(p1.x, p1.y), POINT(p1.x, p2.y), color, wide);
 	DrawLine(POINT(p2.x, p2.y), POINT(p2.x, p1.y), color, wide);
 	DrawLine(POINT(p2.x, p2.y), POINT(p1.x, p2.y), color, wide);
+}
+
+void Image::DrawTriangle(POINT p1, POINT p2, POINT p3, RGBA color, long wide)
+{
+	DrawLine(p1, p2, color, wide);
+	DrawLine(p2, p3, color, wide);
+	DrawLine(p3, p1, color, wide);
 }
