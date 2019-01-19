@@ -1,5 +1,7 @@
 #include "src/glib_src.h"
 
+#ifdef _USES_WINDOWS_DRIVER
+
 #ifdef UNICODE
 LPCWSTR WIN_cname = L"GLIB_WNDCLASS";
 #else
@@ -50,15 +52,39 @@ int WIN_RegisterClass()
 	return 0;
 }
 
-LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM w, LPARAM l)
+LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+	if(msg == WM_DESTROY)
+	{
+		windows_count--;
+		if (windows_count == 0) PostQuitMessage(0);
+		return 0;
+	}
+
+	Window w;
 	switch (msg)
 	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
+	case WM_SHOWWINDOW:
 		break;
 	default:
-		return DefWindowProc(wnd, msg, w, l);
+		return DefWindowProc(wnd, msg, wp, lp);
 	}
 	return 0;
 }
+
+int WIN_MainLoop()
+{
+	MSG msg = { 0 };
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, NULL, 0, -1, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+
+	return (int)msg.lParam;
+}
+
+#endif

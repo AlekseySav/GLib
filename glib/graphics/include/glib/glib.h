@@ -53,8 +53,6 @@ typedef unsigned int32_t u_int32;
 #undef FAILED
 #define FAILED(x) (x < 0)
 
-EXTERN int gmain(char * argv, int argc);
-
 #ifndef __cplusplus
 
 #undef bool
@@ -65,6 +63,20 @@ typedef int bool;
 #define true 1
 #define false 0
 #endif
+
+#ifdef _USES_WINDOWS_DRIVER
+#define _FUNCTION_HANDLE(__name__) WIN_##__name__
+#elif defined(_USES_LINUX_DRIVER)
+#define _FUNCTION_HANDLE(__name__) LINUX_##__name__
+#elif defined(_USES_DEFAULT_DRIVER)
+#define _FUNCTION_HANDLE(__name__) DEF_##__name__
+#endif
+
+#define EX_MainLoop  _FUNCTION_HANDLE(MainLoop)
+
+EXTERN int glibLoop();
+
+EXTERN_C int gmain(char * argv, int argc);
 
 #include "sys/window.h"
 
