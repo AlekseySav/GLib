@@ -40,6 +40,8 @@
 	#define EXTERN EXTERN_C
 #endif
 
+typedef unsigned int u_int;
+
 #ifdef _USES_WINDOWS_DRIVER
 typedef unsigned __int8 u_int8;
 typedef unsigned __int16 u_int16;
@@ -76,12 +78,9 @@ typedef int bool;
 
 EXTERN int glibLoop();
 
-EXTERN_C int gmain(char * argv, int argc);
+EXTERN_C int gmain(char * argv[], int argc);
 
+typedef void * Handle;
+
+#include "sys/event.h"
 #include "sys/window.h"
-
-#ifndef USE_GMAIN_ONLY
-	#ifndef main
-		#define main gmain
-	#endif
-#endif

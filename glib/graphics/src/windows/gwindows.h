@@ -19,12 +19,15 @@ int WIN_RegisterClass();
 
 int WIN_CreateWindow(Window w);
 int WIN_ShowWindow(Window w);
+int WIN_CloseWindow(Window w);
 DWORD WIN_Style(Window w);
 
 void WIN_Fullscreen(Window w);
 void WIN_ChangeWindowPos(Window w);
 void WIN_ChangeWindowTitle(Window w);
 void WIN_ChangeWindowFlags(Window w);
+
+Window WIN_GetWindow(void * hwnd);
 
 int WIN_MainLoop();
 

@@ -20,12 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glib\glib.h" />
+    <ClInclude Include="include\glib\sys\event.h" />
     <ClInclude Include="include\glib\sys\window.h" />
     <ClInclude Include="src\glib_src.h" />
     <ClInclude Include="src\windows\gwindows.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\event.c" />
     <ClCompile Include="src\glib.c" />
     <ClCompile Include="src\window.c" />
     <ClCompile Include="src\windows\w_main.c" />
