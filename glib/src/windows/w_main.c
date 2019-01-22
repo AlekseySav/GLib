@@ -79,25 +79,28 @@ int WIN_RegisterClass()
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	Window w = EX_GetWindow(wnd);
+	if FAILED(w) return DefWinProc;
 	EventArgs args;
 
 	if (msg == WM_DESTROY)
 	{
-		windows_count--;
+		glib_windows_count--;
 		if (w->prev != NULL) ((Window)w->prev)->next = w->next;
 		if (w->next != NULL) ((Window)w->next)->prev = w->prev;
 		glibAddWindowFlag(SYS_CLOSED, w);
-		if (glibCheckWindowEvent(w, EVENT_CLOSED)) {
-			args.msg = EVENT_CLOSED;
-			glibRunWindowEvent(w, &args);
-		}
+		args.msg = EVENT_CLOSED;
+		glibRunWindowEvent(w, &args);
 
-		if (windows_count == 0) PostQuitMessage(0);
+		if (glib_windows_count == 0) PostQuitMessage(0);
 		return 0;
 	}
 
 	if (w == NULL) return DefWinProc;
-
+	HDC hDC, hCompatibleDC;
+	PAINTSTRUCT PaintStruct;
+	HANDLE hBitmap, hOldBitmap;
+	RECT Rect;
+	BITMAP Bitmap;
 	switch (msg)
 	{
 	case WM_SHOWWINDOW:
@@ -138,6 +141,22 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			args.msg = EVENT_MOVED;
 
 			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_PAINT:
+		if (glibCheckWindowEvent(w, EVENT_DRAW)) {
+			hDC = BeginPaint(wnd, &PaintStruct);
+			//hBitmap = (HBITMAP)LoadImage(NULL, "1.bmp", IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_DEFAULTSIZE | LR_LOADFROMFILE);
+			//GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
+			//hCompatibleDC = CreateCompatibleDC(hDC);
+			//hOldBitmap = SelectObject(hCompatibleDC, hBitmap);
+			//GetClientRect(wnd, &Rect);
+			//StretchBlt(hDC, 0, 0, Rect.right, Rect.bottom, hCompatibleDC, 0, 0, Bitmap.bmWidth,
+			//	Bitmap.bmHeight, SRCCOPY);
+			//SelectObject(hCompatibleDC, hOldBitmap);
+			//DeleteObject(hBitmap);
+			//DeleteDC(hCompatibleDC);
+			EndPaint(wnd, &PaintStruct);
 		}
 		break;
 	}

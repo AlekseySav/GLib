@@ -40,8 +40,6 @@
 	#define EXTERN EXTERN_C
 #endif
 
-typedef unsigned int u_int;
-
 #ifdef _USES_WINDOWS_DRIVER
 typedef unsigned __int8 u_int8;
 typedef unsigned __int16 u_int16;
@@ -51,6 +49,9 @@ typedef unsigned int8_t u_int8;
 typedef unsigned int16_t u_int16;
 typedef unsigned int32_t u_int32;
 #endif
+
+typedef unsigned int u_int;
+typedef u_int8 byte;
 
 #undef FAILED
 #define FAILED(x) (x < 0)
@@ -83,4 +84,5 @@ EXTERN_C int gmain(char * argv[], int argc);
 typedef void * Handle;
 
 #include "sys/event.h"
+#include "sys/graphics.h"
 #include "sys/window.h"

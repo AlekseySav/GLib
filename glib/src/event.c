@@ -12,6 +12,8 @@ void glibSetEvent(EventHandles * events, EventHandle handle, u_int type)
 		events->resize = handle;
 	if (type & EVENT_MOVED)
 		events->moved = handle;
+	if (type & EVENT_DRAW)
+		events->draw = handle;
 }
 
 bool glibRunEvent(EventHandles * events, EventArgs * args)
@@ -41,6 +43,11 @@ bool glibRunEvent(EventHandles * events, EventArgs * args)
 	case EVENT_MOVED:
 		if (events->moved != NULL)
 			events->moved(args);
+		else return false;
+		break;
+	case EVENT_DRAW:
+		if (events->draw != NULL)
+			events->draw(args);
 		else return false;
 		break;
 	}

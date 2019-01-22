@@ -1,7 +1,7 @@
 #include "glib_src.h"
 
-u_int windows_count = 0;
-Window__ * last = NULL;
+u_int glib_windows_count = 0;
+Window__ * glib_window_last = NULL;
 
 bool glibCheckWindow(Window w)
 {
@@ -32,7 +32,7 @@ bool glibRemoveWindowFlag(u_int32 flag, Window w)
 	return glibCheckWindow(w);
 }
 
-Window glibCreateWindow(char * title, int x, int y, int width, int height, u_int32 flags, const void * parent)
+Window glibCreateWindow(char * title, u_int x, u_int y, u_int width, u_int height, u_int32 flags, const void * parent)
 {
 	Window w = (Window)malloc(sizeof(Window__));
 	w->title = title;
@@ -51,14 +51,14 @@ Window glibCreateWindow(char * title, int x, int y, int width, int height, u_int
 	else
 	{
 		glibAddWindowFlag(SYS_CREATED, w);
-		w->prev = last;
+		w->prev = glib_window_last;
 		w->next = NULL;
 
-		if (last != NULL)
-			last->next = w;
+		if (glib_window_last != NULL)
+			glib_window_last->next = w;
 
-		last = w;
-		windows_count++;
+		glib_window_last = w;
+		glib_windows_count++;
 	}
 	return w;
 }
@@ -104,6 +104,8 @@ bool glibCheckWindowEvent(Window w, u_int type)
 		return w->handles.resize != NULL;
 	case EVENT_MOVED:
 		return w->handles.moved != NULL;
+	case EVENT_DRAW:
+		return w->handles.draw != NULL;
 	default:
 		return false;
 	}

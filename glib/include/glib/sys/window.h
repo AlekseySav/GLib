@@ -18,8 +18,8 @@ typedef struct Window__ {
 	const void * parent;
 
 	char * title;
-	int x, y;
-	int width, height;
+	u_int x, y;
+	u_int width, height;
 
 	u_int32 flags;
 
@@ -30,7 +30,7 @@ typedef struct Window__ {
 
 EXTERN bool glibCheckWindow(Window w);
 
-EXTERN Window glibCreateWindow(char * title, int x, int y, int width, int height, u_int32 flags, const void * parent);
+EXTERN Window glibCreateWindow(char * title, u_int x, u_int y, u_int width, u_int height, u_int32 flags, const void * parent);
 EXTERN int glibShowWindow(Window w);
 EXTERN int glibCloseWindow(Window w);
 
@@ -58,6 +58,8 @@ EXTERN int glibCloseWindow(Window w);
 #define SYS_CREATED				0x00001000
 #define SYS_SHOWN				0x00002000
 #define SYS_CLOSED				0x00004000
+
+#define WINDOW_FAILED(w) (w->flags & SYS_FAILED)
 
 EXTERN bool glibAddWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibRemoveWindowFlag(u_int32 flag, Window w);

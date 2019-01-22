@@ -124,9 +124,9 @@ void WIN_ChangeWindowFlags(Window w)
 
 Window WIN_GetWindow(void * hwnd)
 {
-	if (last == NULL) return NULL;
+	if (glib_window_last == NULL) return NULL;
 
-	Window w = last;
+	Window w = glib_window_last;
 	do {
 		if ((HWND)w->ptr == (HWND)hwnd) return w;
 		w = (Window)w->prev;

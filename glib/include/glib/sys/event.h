@@ -6,8 +6,9 @@
 #define EVENT_CLOSED	0x0004
 #define EVENT_RESIZE	0x0008
 #define EVENT_MOVED		0x0010
+#define EVENT_DRAW		0x0020
 
-#define EVENT_ALL		0x001f
+#define EVENT_ALL		0x003f
 
 typedef struct EventArgs__ {
 	Handle handle;
@@ -30,6 +31,7 @@ typedef struct EventHandles__ {
 	EventHandle closed;
 	EventHandle resize;
 	EventHandle moved;
+	EventHandle draw;
 } EventHandles;
 
 EXTERN void glibSetEvent(EventHandles * events, EventHandle handle, u_int type);
