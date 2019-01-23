@@ -75,6 +75,17 @@ int WIN_RegisterClass()
 	return 0;
 }
 
+int WIN_Paint(EventArgs * args, Window w)
+{
+	if (glibCheckWindowEvent(w, EVENT_DRAW)) {
+		glib_drawing = true;
+		args->msg = EVENT_DRAW;
+
+		return glibRunWindowEvent(w, args);
+	}
+	return 0;
+}
+
 #define DefWinProc DefWindowProc(wnd, msg, wp, lp)
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -96,11 +107,6 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	}
 
 	if (w == NULL) return DefWinProc;
-	HDC hDC, hCompatibleDC;
-	PAINTSTRUCT PaintStruct;
-	HANDLE hBitmap, hOldBitmap;
-	RECT Rect;
-	BITMAP Bitmap;
 	switch (msg)
 	{
 	case WM_SHOWWINDOW:
@@ -144,23 +150,41 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 		break;
 	case WM_PAINT:
-		if (glibCheckWindowEvent(w, EVENT_DRAW)) {
-			hDC = BeginPaint(wnd, &PaintStruct);
-			//hBitmap = (HBITMAP)LoadImage(NULL, "1.bmp", IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_DEFAULTSIZE | LR_LOADFROMFILE);
-			//GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
-			//hCompatibleDC = CreateCompatibleDC(hDC);
-			//hOldBitmap = SelectObject(hCompatibleDC, hBitmap);
-			//GetClientRect(wnd, &Rect);
-			//StretchBlt(hDC, 0, 0, Rect.right, Rect.bottom, hCompatibleDC, 0, 0, Bitmap.bmWidth,
-			//	Bitmap.bmHeight, SRCCOPY);
-			//SelectObject(hCompatibleDC, hOldBitmap);
-			//DeleteObject(hBitmap);
-			//DeleteDC(hCompatibleDC);
-			EndPaint(wnd, &PaintStruct);
-		}
+		WIN_Paint(&args, w);
+			if (glib_drawing)
+				return DefWinProc;
+			return 0;
 		break;
 	}
 	return DefWinProc;
+}
+
+void WIN_DrawWindow(Image im, Window w)
+{
+	PAINTSTRUCT ps;
+	HGDIOBJ oldBitmap;
+	HBITMAP hBitmap;
+	Bitmap bitmap = glibCreateBitmap(im);
+	byte * ptr = (void*)(bitmap.image);
+	if (ptr == NULL) return;
+
+	HDC hdc = BeginPaint((HWND)w->ptr, &ps);
+
+	hBitmap = CreateDIBSection(hdc, (const BITMAPINFO *)&bitmap.info, DIB_RGB_COLORS, &ptr, NULL, 0);
+	if (ptr == NULL) return;
+	
+	for (u_int i = 0; i < bitmap.info.biSizeImage; i++) 
+		*ptr++ = *(bitmap.image + i);
+
+	HDC hdcMem = CreateCompatibleDC(hdc);
+	oldBitmap = SelectObject(hdcMem, hBitmap);
+
+	BitBlt(hdc, 0, 0, bitmap.info.biWidth, bitmap.info.biHeight, hdcMem, 0, 0, SRCCOPY);
+
+	SelectObject(hdcMem, oldBitmap);
+	DeleteDC(hdcMem);
+	EndPaint((HWND)w->ptr, &ps);
+	glibFreeBitmap(&bitmap);
 }
 
 int WIN_MainLoop()
@@ -172,6 +196,17 @@ int WIN_MainLoop()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+		}
+		else
+		{
+			Window w = glib_window_last;
+			EventArgs args; args.msg = EVENT_DRAW;
+			do {
+				if (w->flags & STATE_REDRAW)
+					SendMessage((HWND)w->ptr, WM_PAINT, 0, 0);
+				w = (Window)w->prev;
+			} while (w != NULL);
+			glib_drawing = false;
 		}
 	}
 

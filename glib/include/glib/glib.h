@@ -20,12 +20,15 @@
 	#endif
 #endif
 
-#ifndef _INC_STDLIB
-	#include <stdlib.h>
+#ifndef _INC_STDIO
+	#ifndef _CRT_SECURE_NO_WARNINGS
+		#define _CRT_SECURE_NO_WARNINGS
+	#endif
+	#include <stdio.h>
 #endif
 
-#ifndef _INC_STDIO
-	#include <stdio.h>
+#ifndef _INC_STDLIB
+	#include <stdlib.h>
 #endif
 
 #undef EXTERN_C
@@ -52,6 +55,14 @@ typedef unsigned int32_t u_int32;
 
 typedef unsigned int u_int;
 typedef u_int8 byte;
+typedef u_int16 word;
+typedef u_int32 dword;
+
+#define MAKE_WORD(byte1, byte2) ((word)((byte1 & 0xff) | ((byte2 & 0xff) << 8)))
+#define MAKE_DWORD(byte1, byte2, byte3, byte4) ((word)((byte1 & 0xff) | ((byte2 & 0xff) << 8) | ((byte3 & 0xff) << 16) | ((byte4 & 0xff) << 24)))
+#define FREE_WORD(_word, byte_ptr) do { *byte_ptr = (byte)(_word & 0xff); *(byte_ptr + 1) = (byte)((_word >> 8) & 0xff); } while(0)
+#define FREE_DWORD(_dword, byte_ptr) do { *byte_ptr = (byte)(_dword & 0xff); *(byte_ptr + 1) = (byte)((_dword >> 8) & 0xff); \
+								*(byte_ptr + 2) = (byte)((_dword >> 16) & 0xff); *(byte_ptr + 3) = (byte)((_dword >> 24) & 0xff);} while(0)
 
 #undef FAILED
 #define FAILED(x) (x < 0)
@@ -85,4 +96,5 @@ typedef void * Handle;
 
 #include "sys/event.h"
 #include "sys/graphics.h"
+#include "sys/bitmap.h"
 #include "sys/window.h"

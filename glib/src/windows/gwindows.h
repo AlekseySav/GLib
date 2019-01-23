@@ -11,27 +11,30 @@ char * WIN_cname;
 EXTERN HINSTANCE WIN_hinstance;
 
 #ifdef UNICODE
-int WIN_Ascii_to_UNICODE(const char * ibuf, LPWSTR obuf);
+EXTERN int WIN_Ascii_to_UNICODE(const char * ibuf, LPWSTR obuf);
 #endif
 
-int WIN_Initialize();
-int WIN_RegisterClass();
+EXTERN int WIN_Initialize();
+EXTERN int WIN_RegisterClass();
 
-int WIN_CreateWindow(Window w);
-int WIN_ShowWindow(Window w);
-int WIN_CloseWindow(Window w);
-DWORD WIN_Style(Window w);
+EXTERN int WIN_CreateWindow(Window w);
+EXTERN int WIN_ShowWindow(Window w);
+EXTERN int WIN_CloseWindow(Window w);
+EXTERN DWORD WIN_Style(Window w);
 
-void WIN_Fullscreen(Window w);
-void WIN_ChangeWindowPos(Window w);
-void WIN_ChangeWindowTitle(Window w);
-void WIN_ChangeWindowFlags(Window w);
+EXTERN void WIN_Fullscreen(Window w);
+EXTERN void WIN_ChangeWindowPos(Window w);
+EXTERN void WIN_ChangeWindowTitle(Window w);
+EXTERN void WIN_ChangeWindowFlags(Window w);
+EXTERN void WIN_DrawWindow(Image im, Window w);
 
-Window WIN_GetWindow(void * hwnd);
+EXTERN Window WIN_GetWindow(void * hwnd);
 
-int WIN_MainLoop();
+EXTERN int WIN_MainLoop();
 
-LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM w, LPARAM l);
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hprev, LPSTR str, int cmd);
+EXTERN LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM w, LPARAM l);
+EXTERN int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hprev, LPSTR str, int cmd);
+
+EXTERN int WIN_Paint(EventArgs * args, Window w);
 
 #endif

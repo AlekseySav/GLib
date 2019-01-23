@@ -55,50 +55,6 @@ void glibValueBMIH(BitmapInfoHeader * h, byte * bytes)
 	FREE_DWORD(h->biClrImportant, &bytes[36]);
 }
 
-Bitmap glibCreateBitmapRGB(long width, long height, RGB * image)
-{
-	u_int size = (width * 3 + width % 4) * height;
-
-	Bitmap bitmap;
-
-	bitmap.info.biSize = 40;
-	bitmap.info.biWidth = width;
-	bitmap.info.biHeight = height;
-	bitmap.info.biPlanes = 1;
-	bitmap.info.biBitCount = 24;
-	bitmap.info.biCompression = BI_RGB;
-	bitmap.info.biSizeImage = size;
-	bitmap.info.biXPelsPerMeter = 0;
-	bitmap.info.biYPelsPerMeter = 0;
-	bitmap.info.biClrUsed = 0;
-	bitmap.info.biClrImportant = 0;
-
-	bitmap.file.bfType = BF_BITMAP;
-	bitmap.file.bfSize = 54 + bitmap.info.biSizeImage;
-	bitmap.file.bfReserved1 = 0;
-	bitmap.file.bfReserved2 = 0;
-	bitmap.file.bfOffBits = 54;
-
-	bitmap.palette = NULL;
-
-	byte * bgr = malloc(size);
-	byte * ptr = bgr;
-	for (long i = height; i >= 0; i--)
-	{
-		for (long j = 0; j < width; j--, ptr += 3)
-		{
-			*ptr = *((byte *)(image + i));
-			*(ptr + 1) = *((byte *)(image + i) + 1);
-			*(ptr + 2) = *((byte *)(image + i)  + 2);
-		}
-		u_int8 t = width % 4;
-		while (t--) { *ptr = '\0'; ptr++; }
-	}
-
-	bitmap.image = bgr;
-	return bitmap;
-}
-
 Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image)
 {
 	u_int size = 4 * width * height;
@@ -118,34 +74,29 @@ Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image)
 	bitmap.info.biClrImportant = 0;
 
 	bitmap.file.bfType = BF_BITMAP;
-	bitmap.file.bfSize = 54 + bitmap.info.biSizeImage;
+	bitmap.file.bfSize = 54 + size;
 	bitmap.file.bfReserved1 = 0;
 	bitmap.file.bfReserved2 = 0;
 	bitmap.file.bfOffBits = 54;
 
 	bitmap.palette = NULL;
 
-	byte * bgra = malloc(size);
-	byte * ptr = bgra;
+	bitmap.image = (byte *)malloc(size);
+	byte * ptr = bitmap.image;
 	for (long i = height - 1; i >= 0; i--)
-		for (long j = 0; j < width; j++, ptr += 3)
+		for (long j = 0; j < width; j++, ptr += 4)
 		{
-			*ptr = (image + i)->b;
-			*(ptr + 1) = (image + i)->g;
-			*(ptr + 2) = (image + i)->r;
-			*(ptr + 3) = (image + i)->a;
+			*ptr = *((byte *)(image + i * width + j) + 3);
+			*(ptr + 1) = *((byte *)(image + i * width + j) + 2);
+			*(ptr + 2) = *((byte *)(image + i * width + j) + 1);
+			*(ptr + 3) = *((byte *)(image + i * width + j));
 		}
-
-	bitmap.image = (byte *)bgra;
 	return bitmap;
 }
 
 Bitmap glibCreateBitmap(Image image)
 {
-	if (image->type = IMAGE_RGB)
-		return glibCreateBitmapRGB(image->width, image->height, (RGB *)image->image);
-	else
-		return glibCreateBitmapRGBA(image->width, image->height, (RGBA *)image->image);
+	return glibCreateBitmapRGBA(image->width, image->height, (RGBA *)image->image);
 }
 
 int glibWriteBitmap(const char * file, Bitmap * bitmap)
@@ -197,3 +148,7 @@ int glibReadBitmap(const char * file, Bitmap * bitmap)
 	return 0;
 }
 
+void glibFreeBitmap(Bitmap * bitmap)
+{
+	free(bitmap->image);
+}

@@ -1,5 +1,6 @@
 #include "glib_src.h"
 
+bool glib_drawing;
 u_int glib_windows_count = 0;
 Window__ * glib_window_last = NULL;
 
@@ -76,6 +77,7 @@ int glibCloseWindow(Window w)
 	if (!glibCheckWindow(w)) return -3;
 	if (!(w->flags & SYS_SHOWN) || w->flags & SYS_CLOSED) return -2;
 	glibAddWindowFlag(SYS_CLOSED, w);
+	free(w);
 	return EX_CloseWindow(w);
 }
 
@@ -120,4 +122,16 @@ bool glibRunWindowEvent(Window w, EventArgs * args)
 {
 	args->handle = w;
 	return glibRunEvent(&w->handles, args);
+}
+
+bool glibDrawImage(Image im, Window w)
+{
+	if (!glib_drawing) return false;
+	if (!glibCheckWindow(w)) return false;
+	if (im == NULL) return false;
+
+	EX_DrawWindow(im, w);
+	glib_drawing = false;
+
+	return true;
 }

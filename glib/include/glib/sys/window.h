@@ -7,6 +7,7 @@
 #define EX_ChangeWindowTitle _FUNCTION_HANDLE(ChangeWindowTitle)
 #define EX_ChangeWindowFlags _FUNCTION_HANDLE(ChangeWindowFlags)
 #define EX_GetWindow _FUNCTION_HANDLE(GetWindow)
+#define EX_DrawWindow _FUNCTION_HANDLE(DrawWindow)
 
 #ifndef MAX_TITLE_LENGTH
 	#define MAX_TITLE_LENGTH 100
@@ -51,13 +52,14 @@ EXTERN int glibCloseWindow(Window w);
 #define STATE_MINIMIZE			0x00000080
 #define STATE_MAXIMIZE			0x00000100
 #define STATE_DISABLED			0x00000200
+#define STATE_REDRAW			0x00000400
 
-#define SHOW_NOACTIVE			0x00000400
+#define SHOW_NOACTIVE			0x00000800
 
-#define SYS_FAILED				0x00000800
-#define SYS_CREATED				0x00001000
-#define SYS_SHOWN				0x00002000
-#define SYS_CLOSED				0x00004000
+#define SYS_FAILED				0x00001000
+#define SYS_CREATED				0x00002000
+#define SYS_SHOWN				0x00004000
+#define SYS_CLOSED				0x00008000
 
 #define WINDOW_FAILED(w) (w->flags & SYS_FAILED)
 
@@ -75,3 +77,5 @@ EXTERN int glibReloadWindow(Window w, int reload);
 EXTERN bool glibCheckWindowEvent(Window w, u_int type);
 EXTERN void glibSetWindowEvent(Window w, EventHandle handle, u_int etypes);
 EXTERN bool glibRunWindowEvent(Window w, EventArgs * args);
+
+EXTERN bool glibDrawImage(Image im, Window w);
