@@ -55,34 +55,16 @@ void glibValueBMIH(BitmapInfoHeader * h, byte * bytes)
 	FREE_DWORD(h->biClrImportant, &bytes[36]);
 }
 
-Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image)
+Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image, byte * ptr)
 {
-	u_int size = 4 * width * height;
 
 	Bitmap bitmap;
-
-	bitmap.info.biSize = 40;
-	bitmap.info.biWidth = width;
-	bitmap.info.biHeight = height;
-	bitmap.info.biPlanes = 1;
-	bitmap.info.biBitCount = 32;
-	bitmap.info.biCompression = BI_RGB;
-	bitmap.info.biSizeImage = size;
-	bitmap.info.biXPelsPerMeter = 0;
-	bitmap.info.biYPelsPerMeter = 0;
-	bitmap.info.biClrUsed = 0;
-	bitmap.info.biClrImportant = 0;
-
-	bitmap.file.bfType = BF_BITMAP;
-	bitmap.file.bfSize = 54 + size;
-	bitmap.file.bfReserved1 = 0;
-	bitmap.file.bfReserved2 = 0;
-	bitmap.file.bfOffBits = 54;
+	bitmap.info = glibCreateBitmapInfoHeader(width, height);
+	bitmap.file = glibCreateBitmapFileHeader(width, height);
 
 	bitmap.palette = NULL;
 
-	bitmap.image = (byte *)malloc(size);
-	byte * ptr = bitmap.image;
+	bitmap.image = ptr;
 	for (long i = height - 1; i >= 0; i--)
 		for (long j = 0; j < width; j++, ptr += 4)
 		{
@@ -94,9 +76,9 @@ Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image)
 	return bitmap;
 }
 
-Bitmap glibCreateBitmap(Image image)
+Bitmap glibCreateBitmap(Image image, byte * ptr)
 {
-	return glibCreateBitmapRGBA(image->width, image->height, (RGBA *)image->image);
+	return glibCreateBitmapRGBA(image->width, image->height, (RGBA *)image->image, ptr);
 }
 
 int glibWriteBitmap(const char * file, Bitmap * bitmap)
@@ -148,7 +130,38 @@ int glibReadBitmap(const char * file, Bitmap * bitmap)
 	return 0;
 }
 
-void glibFreeBitmap(Bitmap * bitmap)
+BitmapFileHeader glibCreateBitmapFileHeader(long width, long height)
 {
-	free(bitmap->image);
+	u_int size = 4 * width * height;
+
+	BitmapFileHeader file;
+
+	file.bfType = BF_BITMAP;
+	file.bfSize = 54 + size;
+	file.bfReserved1 = 0;
+	file.bfReserved2 = 0;
+	file.bfOffBits = 54;
+
+	return file;
+}
+
+BitmapInfoHeader glibCreateBitmapInfoHeader(long width, long height)
+{
+	BitmapInfoHeader info;
+
+	u_int size = 4 * width * height;
+
+	info.biSize = 40;
+	info.biWidth = width;
+	info.biHeight = height;
+	info.biPlanes = 1;
+	info.biBitCount = 32;
+	info.biCompression = BI_RGB;
+	info.biSizeImage = size;
+	info.biXPelsPerMeter = 0;
+	info.biYPelsPerMeter = 0;
+	info.biClrUsed = 0;
+	info.biClrImportant = 0;
+
+	return info;
 }

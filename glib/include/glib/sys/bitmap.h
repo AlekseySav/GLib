@@ -52,10 +52,11 @@ typedef struct Bitmap__
 #define BITMAP_INVALID_PALETTE -4
 #define BITMAP_INVALID_IMAGE -8
 
-EXTERN Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image);
-EXTERN Bitmap glibCreateBitmap(Image image);
+EXTERN Bitmap glibCreateBitmapRGBA(long width, long height, RGBA * image, byte * ptr);
+EXTERN Bitmap glibCreateBitmap(Image image, byte * ptr);
 
 EXTERN int glibWriteBitmap(const char * file, Bitmap * bitmap);
 EXTERN int glibReadBitmap(const char * file, Bitmap * bitmap);
 
-EXTERN void glibFreeBitmap(Bitmap * bitmap);
+EXTERN BitmapFileHeader glibCreateBitmapFileHeader(long width, long height);
+EXTERN BitmapInfoHeader glibCreateBitmapInfoHeader(long width, long height);

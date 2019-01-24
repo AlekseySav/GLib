@@ -164,27 +164,38 @@ void WIN_DrawWindow(Image im, Window w)
 	PAINTSTRUCT ps;
 	HGDIOBJ oldBitmap;
 	HBITMAP hBitmap;
-	Bitmap bitmap = glibCreateBitmap(im);
-	byte * ptr = (void*)(bitmap.image);
+	BitmapInfoHeader info = glibCreateBitmapInfoHeader(w->width, w->height);
+	void * memalloc = malloc(info.biSize);
+	byte * ptr = (byte *)memalloc;
+
 	if (ptr == NULL) return;
 
 	HDC hdc = BeginPaint((HWND)w->ptr, &ps);
 
-	hBitmap = CreateDIBSection(hdc, (const BITMAPINFO *)&bitmap.info, DIB_RGB_COLORS, &ptr, NULL, 0);
+	hBitmap = CreateDIBSection(hdc, (const BITMAPINFO *)&info, DIB_RGB_COLORS, &ptr, NULL, 0);
 	if (ptr == NULL) return;
-	
-	for (u_int i = 0; i < bitmap.info.biSizeImage; i++) 
-		*ptr++ = *(bitmap.image + i);
+
+	u_int add = 0;
+	u_int imptr = info.biWidth * (info.biHeight - 1) * 4;
+	for (long y = 0; y < info.biHeight; y++, imptr -= 8 * info.biWidth)
+		for (long x = 0; x < info.biWidth; x++, add += 4, imptr += 4)
+		{
+			*(ptr + add) = *(im->image + imptr + 3);
+			*(ptr + add + 1) = *(im->image + imptr + 2);
+			*(ptr + add + 2) = *(im->image + imptr + 1);
+			*(ptr + add + 3) = *(im->image + imptr);
+		}
 
 	HDC hdcMem = CreateCompatibleDC(hdc);
 	oldBitmap = SelectObject(hdcMem, hBitmap);
 
-	BitBlt(hdc, 0, 0, bitmap.info.biWidth, bitmap.info.biHeight, hdcMem, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, info.biWidth, info.biHeight, hdcMem, 0, 0, SRCCOPY);
 
 	SelectObject(hdcMem, oldBitmap);
 	DeleteDC(hdcMem);
 	EndPaint((HWND)w->ptr, &ps);
-	glibFreeBitmap(&bitmap);
+
+	free(memalloc);
 }
 
 int WIN_MainLoop()
@@ -199,13 +210,12 @@ int WIN_MainLoop()
 		}
 		else
 		{
-			Window w = glib_window_last;
+			Window w = glib_window_draw;
+			if (w == NULL) continue;
+			if(!(w->flags & SYS_REDRAW)) continue;
+
 			EventArgs args; args.msg = EVENT_DRAW;
-			do {
-				if (w->flags & STATE_REDRAW)
-					SendMessage((HWND)w->ptr, WM_PAINT, 0, 0);
-				w = (Window)w->prev;
-			} while (w != NULL);
+			WIN_Paint(&args, w);
 			glib_drawing = false;
 		}
 	}

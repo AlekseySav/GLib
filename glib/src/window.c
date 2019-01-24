@@ -3,6 +3,7 @@
 bool glib_drawing;
 u_int glib_windows_count = 0;
 Window__ * glib_window_last = NULL;
+Window__ * glib_window_draw = NULL;
 
 bool glibCheckWindow(Window w)
 {
@@ -134,4 +135,11 @@ bool glibDrawImage(Image im, Window w)
 	glib_drawing = false;
 
 	return true;
+}
+
+void glibSetMainDrawingWindow(Window w)
+{
+	if (glib_window_draw != NULL) glibRemoveWindowFlag(SYS_REDRAW, glib_window_draw);
+	glib_window_draw = w;
+	glibAddWindowFlag(SYS_REDRAW, w);
 }

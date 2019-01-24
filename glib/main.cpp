@@ -5,7 +5,7 @@ void redraw(EventArgs * args)
 	Window w = (Window)args->handle;
 	static u_int x = w->width / 2, y = 70;
 	static long speed = 10;
-	y += 100;
+	y += speed;
 	speed += 10;
 
 	if (y >= w->height - 100)
@@ -30,6 +30,8 @@ int gmain(char * argv[], int argc)
 	if WINDOW_FAILED(w) return 1;
 
 	glibSetWindowEvent(w, redraw, EVENT_DRAW);
+	glibSetMainDrawingWindow(w);
+
 	glibShowWindow(w);
 
 	return glibLoop();

@@ -52,20 +52,22 @@ EXTERN int glibCloseWindow(Window w);
 #define STATE_MINIMIZE			0x00000080
 #define STATE_MAXIMIZE			0x00000100
 #define STATE_DISABLED			0x00000200
-#define STATE_REDRAW			0x00000400
 
-#define SHOW_NOACTIVE			0x00000800
+#define SHOW_NOACTIVE			0x00000400
 
-#define SYS_FAILED				0x00001000
-#define SYS_CREATED				0x00002000
-#define SYS_SHOWN				0x00004000
-#define SYS_CLOSED				0x00008000
+#define SYS_FAILED				0x00000800
+#define SYS_CREATED				0x00001000
+#define SYS_SHOWN				0x00002000
+#define SYS_CLOSED				0x00004000
+#define SYS_REDRAW				0x00008000
 
 #define WINDOW_FAILED(w) (w->flags & SYS_FAILED)
 
 EXTERN bool glibAddWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibRemoveWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibCorrectWindowsFlag(u_int32 flags);
+
+EXTERN void glibSetMainDrawingWindow(Window w);
 
 #define RELOAD_POSITION			0x00000001
 #define RELOAD_TITLE			0x00000002

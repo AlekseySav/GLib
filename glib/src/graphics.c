@@ -24,8 +24,7 @@ Image glibCreateImage(u_int width, u_int height)
 	im->width = width;
 	im->height = height;
 
-	byte * target = (byte *)malloc(width * height * 4);
-	im->image = (byte *)target;
+	im->image = (byte *)malloc(width * height * 4);
 
 	return im;
 }
