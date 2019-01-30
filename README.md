@@ -1,2 +1,2 @@
 # GLib
-This will be a new Graphics Library, which should work almost with videocard.
+This will be a new Graphics Library, which may be cross-platform sometimes...
