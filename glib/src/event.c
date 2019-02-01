@@ -2,6 +2,8 @@
 
 void glibSetEvent(EventHandles * events, EventHandle handle, u_int type)
 {
+	if (type & EVENT_BASIC)
+		events->basic = handle;
 	if (type & EVENT_SHOWN)
 		events->shown = handle;
 	if (type & EVENT_CLOSING)
@@ -20,6 +22,11 @@ bool glibRunEvent(EventHandles * events, EventArgs * args)
 {
 	switch (args->msg)
 	{
+	case EVENT_BASIC:
+		if (events->basic != NULL)
+			events->basic(args);
+		else return false;
+		break;
 	case EVENT_SHOWN:
 			if (events->shown != NULL)
 				events->shown(args);
@@ -52,4 +59,27 @@ bool glibRunEvent(EventHandles * events, EventArgs * args)
 		break;
 	}
 	return true;
+}
+
+bool glibCheckEvent(u_int type, EventHandles * events)
+{
+	switch (type)
+	{
+	case EVENT_SHOWN:
+		return events->shown != NULL;
+	case EVENT_CLOSING:
+		return events->closing != NULL;
+	case EVENT_CLOSED:
+		return events->closed != NULL;
+	case EVENT_RESIZE:
+		return events->resize != NULL;
+	case EVENT_MOVED:
+		return events->moved != NULL;
+	case EVENT_DRAW:
+		return events->draw != NULL;
+	case EVENT_BASIC:
+		return events->basic != NULL;
+	default:
+		return false;
+	}
 }

@@ -56,6 +56,13 @@ int WIN_CreateWindow(Window w)
 			r.bottom = w->y + w->height;
 			r.right = w->x + w->width;
 			AdjustWindowRect(&r, style, FALSE);
+
+			long dy = w->y - r.top;
+			long dx = w->x - r.left;
+
+			r.top += dy; r.bottom += dy;
+			r.left += dx; r.right += dx;
+
 			w->ptr = CreateWindow(WIN_cname, (LPCWSTR)str, style, r.left, r.top, r.right - r.left, r.bottom - r.top,
 				(HWND)(w->parent), (HMENU)NULL, WIN_hinstance, 0);
 		}

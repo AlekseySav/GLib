@@ -130,11 +130,11 @@ void glibDrawLine(Image im, Point p1, Point p2, RGBA color, long wide)
 		MOVE_VARIBLES(p1.y, p2.y);
 	}
 
-	u_int dx = p2.x - p1.x, dy = p2.y - p1.y;
+	long dx = p2.x - p1.x, dy = p2.y - p1.y;
 
-	for (u_int x = p1.x; x <= p2.x; x++)
+	for (long x = p1.x; x <= (long)p2.x; x++)
 	{
-		u_int y = (u_int)(dy * (x - p1.x) / dx + p1.y);
+		long y = (long)(dy * (long)(x - p1.x) / (long)dx + p1.y);
 		if (reversed)
 			glibFillSquare(im, glibCreatePoint(y - wide / 2, x - wide / 2), wide, color);
 		else

@@ -13,12 +13,6 @@ typedef struct RGBA__
 
 EXTERN RGBA glibCreateRGBA(byte r, byte g, byte b, byte alpha);
 
-#define RGB_BLACK glibCreateRGBA(0, 0, 0, 255)
-#define RGB_WHITE glibCreateRGBA(255, 255, 255, 255)
-#define RGB_RED glibCreateRGBA(255, 0, 0, 255)
-#define RGB_GREEN glibCreateRGBA(0, 255, 0, 255)
-#define RGB_BLUE glibCreateRGBA(0, 0, 255, 255)
-
 typedef struct Image__
 {
 	byte * image;

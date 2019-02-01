@@ -1,38 +1,34 @@
 #include <glib/glib.h>
+#include <glib/std.h>
 
-void redraw(EventArgs * args)
+u_int h = 100;
+long speed = 5;
+
+void draw(EventArgs * args)
 {
 	Window w = (Window)args->handle;
-	static u_int x = w->width / 2, y = 70;
-	static long speed = 10;
-	y += speed;
-	speed += 10;
 
-	if (y >= w->height - 100)
+	Image image = glibCreateImage(w->width, w->height);
+	glibFillImage(image, RGB_BLUE);
+	glibFillCircle(image, POINT(w->width / 2, h), 100, RGB_RED);
+
+	speed += 5;
+	h += speed;
+	if (h > w->height - 100)
 	{
-		y = w->height - 110;
 		speed = -speed;
+		h = w->height - 100;
 	}
-	if (y < 70) y = 70;
 
-	Image im = glibCreateImage(w->width, w->height);
-	glibFillImage(im, RGB_BLUE);
-
-	glibFillCircle(im, glibCreatePoint(x, y), 50, RGB_RED);
-
-	glibDrawImage(im, w);
-	glibFreeImage(im);
+	glibDrawImage(image, w);
 }
 
 int gmain(char * argv[], int argc)
 {
-	Window w = glibCreateWindow((char *)"Hello, world!", WINDOW_DEFAULT_POSITION, 0, 0, 0, STYLE_NORMAL, NULL);
+	Window w = glibCreateWindow((char *)"heh", WINDOW_DEFAULT_POSITION, 0, 0, 0, STYLE_NORMAL | SYS_REDRAW, NULL);
 	if WINDOW_FAILED(w) return 1;
 
-	glibSetWindowEvent(w, redraw, EVENT_DRAW);
-	glibSetMainDrawingWindow(w);
-
+	glibSetWindowEvent(w, draw, EVENT_DRAW | EVENT_BASIC);
 	glibShowWindow(w);
-
 	return glibLoop();
 }

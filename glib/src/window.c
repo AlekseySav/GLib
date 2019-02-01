@@ -3,7 +3,6 @@
 bool glib_drawing;
 u_int glib_windows_count = 0;
 Window__ * glib_window_last = NULL;
-Window__ * glib_window_draw = NULL;
 
 bool glibCheckWindow(Window w)
 {
@@ -94,24 +93,7 @@ int glibReloadWindow(Window w, int reload)
 bool glibCheckWindowEvent(Window w, u_int type)
 {
 	if (!glibCheckWindow(w)) return false;
-
-	switch (type)
-	{
-	case EVENT_SHOWN:
-		return w->handles.shown != NULL;
-	case EVENT_CLOSING:
-		return w->handles.closing != NULL;
-	case EVENT_CLOSED:
-		return w->handles.closed != NULL;
-	case EVENT_RESIZE:
-		return w->handles.resize != NULL;
-	case EVENT_MOVED:
-		return w->handles.moved != NULL;
-	case EVENT_DRAW:
-		return w->handles.draw != NULL;
-	default:
-		return false;
-	}
+	return glibCheckEvent(type, &w->handles);
 }
 
 void glibSetWindowEvent(Window w, EventHandle handle, u_int etypes)
@@ -135,11 +117,4 @@ bool glibDrawImage(Image im, Window w)
 	glib_drawing = false;
 
 	return true;
-}
-
-void glibSetMainDrawingWindow(Window w)
-{
-	if (glib_window_draw != NULL) glibRemoveWindowFlag(SYS_REDRAW, glib_window_draw);
-	glib_window_draw = w;
-	glibAddWindowFlag(SYS_REDRAW, w);
 }

@@ -16,5 +16,4 @@ EXTERN long glib_abs(long x);
 
 EXTERN u_int glib_windows_count;
 EXTERN Window__ * glib_window_last;
-EXTERN Window__ * glib_window_draw;
 EXTERN bool glib_drawing;

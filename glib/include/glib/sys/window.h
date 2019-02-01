@@ -24,7 +24,7 @@ typedef struct Window__ {
 
 	u_int32 flags;
 
-	const void * prev, *next;
+	const void * prev, * next;
 
 	EventHandles handles;
 } * Window;
@@ -66,8 +66,6 @@ EXTERN int glibCloseWindow(Window w);
 EXTERN bool glibAddWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibRemoveWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibCorrectWindowsFlag(u_int32 flags);
-
-EXTERN void glibSetMainDrawingWindow(Window w);
 
 #define RELOAD_POSITION			0x00000001
 #define RELOAD_TITLE			0x00000002

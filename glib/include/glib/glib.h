@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _GLIB
+	#define _GLIB 2
+#endif
+
 #ifdef WIN32
 	#define _USES_WINDOWS_DRIVER
 #elif defined(__LINUX__)

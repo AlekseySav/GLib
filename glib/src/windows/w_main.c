@@ -161,41 +161,39 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void WIN_DrawWindow(Image im, Window w)
 {
-	PAINTSTRUCT ps;
-	HGDIOBJ oldBitmap;
-	HBITMAP hBitmap;
-	BitmapInfoHeader info = glibCreateBitmapInfoHeader(w->width, w->height);
-	void * memalloc = malloc(info.biSize);
-	byte * ptr = (byte *)memalloc;
-
+	byte * ptr = (byte *)malloc(im->width * im->height * 4);
 	if (ptr == NULL) return;
 
-	HDC hdc = BeginPaint((HWND)w->ptr, &ps);
-
-	hBitmap = CreateDIBSection(hdc, (const BITMAPINFO *)&info, DIB_RGB_COLORS, &ptr, NULL, 0);
+	HDC hdc = GetDC((HWND)w->ptr);
+	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, im->width, im->height);
 	if (ptr == NULL) return;
 
 	u_int add = 0;
-	u_int imptr = info.biWidth * (info.biHeight - 1) * 4;
-	for (long y = 0; y < info.biHeight; y++, imptr -= 8 * info.biWidth)
-		for (long x = 0; x < info.biWidth; x++, add += 4, imptr += 4)
+	for (long y = 0; y < (long)im->height; y++)
+		for (long x = 0; x < (long)im->width; x++, add += 4)
 		{
-			*(ptr + add) = *(im->image + imptr + 3);
-			*(ptr + add + 1) = *(im->image + imptr + 2);
-			*(ptr + add + 2) = *(im->image + imptr + 1);
-			*(ptr + add + 3) = *(im->image + imptr);
+			*(ptr + add) = *(im->image + add + 3);
+			*(ptr + add + 1) = *(im->image + add + 2);
+			*(ptr + add + 2) = *(im->image + add + 1);
+			*(ptr + add + 3) = *(im->image + add);
 		}
 
+	SetBitmapBits(hBitmap, im->width * im->height * 4, ptr);
+
 	HDC hdcMem = CreateCompatibleDC(hdc);
-	oldBitmap = SelectObject(hdcMem, hBitmap);
+	HGDIOBJ oldBitmap = SelectObject(hdcMem, hBitmap);
 
-	BitBlt(hdc, 0, 0, info.biWidth, info.biHeight, hdcMem, 0, 0, SRCCOPY);
-
+	BitBlt(hdc, 0, 0, im->width, im->height, hdcMem, 0, 0, SRCCOPY);
 	SelectObject(hdcMem, oldBitmap);
-	DeleteDC(hdcMem);
-	EndPaint((HWND)w->ptr, &ps);
 
-	free(memalloc);
+	DeleteObject(oldBitmap);
+	DeleteObject(hBitmap);
+
+	DeleteDC(hdcMem);
+	ReleaseDC((HWND)w->ptr, hdc);
+
+	free(ptr);
+	glibFreeImage(im);
 }
 
 int WIN_MainLoop()
@@ -210,12 +208,21 @@ int WIN_MainLoop()
 		}
 		else
 		{
-			Window w = glib_window_draw;
-			if (w == NULL) continue;
-			if(!(w->flags & SYS_REDRAW)) continue;
+			EventArgs args;
+			Window w = glib_window_last;
+			do {
+				if (w == NULL) continue;
+				if (w->flags & SYS_REDRAW)
+					WIN_Paint(&args, w);
+				else
+				{
+					args.msg = EVENT_BASIC;
+					glibRunWindowEvent(w, &args);
+				}
 
-			EventArgs args; args.msg = EVENT_DRAW;
-			WIN_Paint(&args, w);
+				w = (Window)w->prev;
+			} while (w != NULL);
+
 			glib_drawing = false;
 		}
 	}
