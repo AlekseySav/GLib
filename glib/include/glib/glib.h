@@ -100,5 +100,4 @@ typedef void * Handle;
 
 #include "sys/event.h"
 #include "sys/graphics.h"
-#include "sys/bitmap.h"
 #include "sys/window.h"
