@@ -77,8 +77,14 @@ int glibCloseWindow(Window w)
 	if (!glibCheckWindow(w)) return -3;
 	if (!(w->flags & SYS_SHOWN) || w->flags & SYS_CLOSED) return -2;
 	glibAddWindowFlag(SYS_CLOSED, w);
+	glib_windows_count--;
+	if (w->prev != NULL) ((Window)w->prev)->next = w->next;
+	if (w->next != NULL) ((Window)w->next)->prev = w->prev;
+	if (w == glib_window_last) glib_window_last = (Window)w->prev;
+	int res = EX_CloseWindow(w);
 	free(w);
-	return EX_CloseWindow(w);
+
+	return res;
 }
 
 int glibReloadWindow(Window w, int reload)

@@ -90,23 +90,20 @@ int WIN_Paint(EventArgs * args, Window w)
 LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	Window w = EX_GetWindow(wnd);
+	if (w == NULL) return DefWinProc;
 	if FAILED(w) return DefWinProc;
 	EventArgs args;
 
 	if (msg == WM_DESTROY)
 	{
-		glib_windows_count--;
-		if (w->prev != NULL) ((Window)w->prev)->next = w->next;
-		if (w->next != NULL) ((Window)w->next)->prev = w->prev;
-		glibAddWindowFlag(SYS_CLOSED, w);
 		args.msg = EVENT_CLOSED;
 		glibRunWindowEvent(w, &args);
+		glibCloseWindow(w);
 
 		if (glib_windows_count == 0) PostQuitMessage(0);
 		return 0;
 	}
 
-	if (w == NULL) return DefWinProc;
 	switch (msg)
 	{
 	case WM_SHOWWINDOW:
@@ -210,8 +207,7 @@ int WIN_MainLoop()
 		{
 			EventArgs args;
 			Window w = glib_window_last;
-			do {
-				if (w == NULL) continue;
+			while (w != NULL) {
 				if (w->flags & SYS_REDRAW)
 					WIN_Paint(&args, w);
 				else
@@ -221,7 +217,7 @@ int WIN_MainLoop()
 				}
 
 				w = (Window)w->prev;
-			} while (w != NULL);
+			}
 
 			glib_drawing = false;
 		}
