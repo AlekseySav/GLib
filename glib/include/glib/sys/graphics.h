@@ -22,6 +22,7 @@ typedef struct Image__
 } * Image;
 
 EXTERN void glibDrawPoint(Image im, Point p, RGBA fill);
+EXTERN void glibDrawStrength(Image im, Point left_upstairs, u_int sizex, u_int sizey, RGBA color, bool fillax, bool fillbx, bool fillay, bool fillby, bool fillov);
 
 EXTERN void glibFillSquare(Image im, Point left_upstairs, u_int side, RGBA clr);
 EXTERN void glibFillRectangle(Image im, Point p1, Point p2, RGBA color);
@@ -34,7 +35,7 @@ EXTERN void glibDrawTriangle(Image im, Point p1, Point p2, Point p3, RGBA color,
 EXTERN void glibDrawCircle(Image im, Point center, u_int radius, RGBA color, long wide);
 
 EXTERN Image glibCreateImage(u_int width, u_int height);
-EXTERN void glibFreeImage(Image im);
+EXTERN void glibReleaseImage(Image im);
 EXTERN void glibFillImage(Image im, RGBA fill);
 
 #define MOVE_VARIBLES(x, y) do { x += y; y = x - y; x -= y; } while(0)

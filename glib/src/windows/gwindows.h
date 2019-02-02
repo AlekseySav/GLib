@@ -9,6 +9,7 @@ char * WIN_cname;
 #endif
 
 EXTERN HINSTANCE WIN_hinstance;
+EXTERN bool WIN_wmpaint;
 
 #ifdef UNICODE
 EXTERN int WIN_Ascii_to_UNICODE(const char * ibuf, LPWSTR obuf);

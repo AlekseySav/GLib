@@ -8,6 +8,7 @@ LPCWSTR WIN_cname = L"GLIB_WNDCLASS";
 char * WIN_cname = "GLIB_WNDCLASS";
 #endif
 HINSTANCE WIN_hinstance;
+bool WIN_wmpaint = false;
 
 int WIN_Ascii_to_UNICODE(const char * ibuf, LPWSTR obuf)
 {
@@ -78,7 +79,7 @@ int WIN_RegisterClass()
 int WIN_Paint(EventArgs * args, Window w)
 {
 	if (glibCheckWindowEvent(w, EVENT_DRAW)) {
-		glib_drawing = true;
+		glibStartWindowDraw(w);
 		args->msg = EVENT_DRAW;
 
 		return glibRunWindowEvent(w, args);
@@ -114,10 +115,10 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		break;
 	case WM_CLOSE:
 		if (glibCheckWindowEvent(w, EVENT_CLOSING)) {
-			args.flags = EVENT_CLOSING_CLOSE;
+			args.flag1 = EVENT_CLOSING_CLOSE;
 			args.msg = EVENT_CLOSING;
 			if (glibRunWindowEvent(w, &args)) {
-				if (args.flags == EVENT_CLOSING_CLOSE) glibCloseWindow(w);
+				if (args.flag1 == EVENT_CLOSING_CLOSE) glibCloseWindow(w);
 				return 0;
 			}
 			return 1;
@@ -129,16 +130,16 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 		if (glibCheckWindowEvent(w, EVENT_RESIZE)) {
 			args.msg = EVENT_RESIZE;
-			if (wp == SIZE_MINIMIZED) args.flags = EVENT_RESIZE_MINIMIZED;
-			if (wp == SIZE_MAXIMIZED) args.flags = EVENT_RESIZE_MAXIMIZED;
-			else args.flags = EVENT_RESIZE_RESTORED;
+			if (wp == SIZE_MINIMIZED) args.flag1 = EVENT_RESIZE_MINIMIZED;
+			if (wp == SIZE_MAXIMIZED) args.flag1 = EVENT_RESIZE_MAXIMIZED;
+			else args.flag1 = EVENT_RESIZE_RESTORED;
 
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_MOVE:
-		w->x = (int)(short)LOWORD(lp);
-		w->y = (int)(short)HIWORD(lp);
+		w->x = (u_int)(lp & 0xffff);
+		w->y = (u_int)((lp >> 16) & 0xffff);
 
 		if (glibCheckWindowEvent(w, EVENT_MOVED)) {
 			args.msg = EVENT_MOVED;
@@ -147,10 +148,108 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 		break;
 	case WM_PAINT:
+		WIN_wmpaint = true;
 		WIN_Paint(&args, w);
-			if (glib_drawing)
+		WIN_wmpaint = false;
+			if (w->flags & SYS_REDRAW)
 				return DefWinProc;
 			return 0;
+		break;
+	case WM_LBUTTONDOWN:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
+			args.msg = EVENT_MOUSEDOWN;
+			args.flag1 = EVENT_MOUSE_LEFTBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_MBUTTONDOWN:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
+			args.msg = EVENT_MOUSEDOWN;
+			args.flag1 = EVENT_MOUSE_MIDDLEBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_RBUTTONDOWN:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
+			args.msg = EVENT_MOUSEDOWN;
+			args.flag1 = EVENT_MOUSE_RIGHTBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_XBUTTONDOWN:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
+			args.msg = EVENT_MOUSEDOWN;
+			args.flag1 = EVENT_MOUSE_XBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_LBUTTONUP:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
+			args.msg = EVENT_MOUSEUP;
+			args.flag1 = EVENT_MOUSE_LEFTBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_MBUTTONUP:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
+			args.msg = EVENT_MOUSEUP;
+			args.flag1 = EVENT_MOUSE_MIDDLEBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_RBUTTONUP:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
+			args.msg = EVENT_MOUSEUP;
+			args.flag1 = EVENT_MOUSE_RIGHTBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_XBUTTONUP:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
+			args.msg = EVENT_MOUSEUP;
+			args.flag1 = EVENT_MOUSE_XBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_LBUTTONDBLCLK:
+		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
+			args.msg = EVENT_DOUBLECLICK;
+			args.flag1 = EVENT_MOUSE_LEFTBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_MBUTTONDBLCLK:
+		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
+			args.msg = EVENT_DOUBLECLICK;
+			args.flag1 = EVENT_MOUSE_MIDDLEBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_RBUTTONDBLCLK:
+		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
+			args.msg = EVENT_DOUBLECLICK;
+			args.flag1 = EVENT_MOUSE_RIGHTBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_XBUTTONDBLCLK:
+		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
+			args.msg = EVENT_DOUBLECLICK;
+			args.flag1 = EVENT_MOUSE_XBUTTON;
+			args.flag2 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
 		break;
 	}
 	return DefWinProc;
@@ -161,7 +260,11 @@ void WIN_DrawWindow(Image im, Window w)
 	byte * ptr = (byte *)malloc(im->width * im->height * 4);
 	if (ptr == NULL) return;
 
-	HDC hdc = GetDC((HWND)w->ptr);
+	HDC hdc;
+	PAINTSTRUCT p;
+	if (WIN_wmpaint) hdc = BeginPaint((HWND)w->ptr, &p);
+	else hdc = GetDC((HWND)w->ptr);
+
 	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, im->width, im->height);
 	if (ptr == NULL) return;
 
@@ -187,10 +290,10 @@ void WIN_DrawWindow(Image im, Window w)
 	DeleteObject(hBitmap);
 
 	DeleteDC(hdcMem);
+	if (WIN_wmpaint) EndPaint((HWND)w->ptr, &p);
 	ReleaseDC((HWND)w->ptr, hdc);
 
 	free(ptr);
-	glibFreeImage(im);
 }
 
 int WIN_MainLoop()
@@ -203,23 +306,14 @@ int WIN_MainLoop()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		else
+
+		EventArgs args;
+		Window w = glib_window_last;
+		while (w != NULL) 
 		{
-			EventArgs args;
-			Window w = glib_window_last;
-			while (w != NULL) {
-				if (w->flags & SYS_REDRAW)
-					WIN_Paint(&args, w);
-				else
-				{
-					args.msg = EVENT_BASIC;
-					glibRunWindowEvent(w, &args);
-				}
-
-				w = (Window)w->prev;
-			}
-
-			glib_drawing = false;
+			args.msg = EVENT_BASIC;
+			glibRunWindowEvent(w, &args);
+			w = (Window)w->prev;
 		}
 	}
 

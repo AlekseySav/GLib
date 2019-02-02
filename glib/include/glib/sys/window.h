@@ -79,3 +79,6 @@ EXTERN void glibSetWindowEvent(Window w, EventHandle handle, u_int etypes);
 EXTERN bool glibRunWindowEvent(Window w, EventArgs * args);
 
 EXTERN bool glibDrawImage(Image im, Window w);
+EXTERN bool glibDrawImageNoRelease(Image im, Window w);
+
+EXTERN void glibStartWindowDraw(Window w);

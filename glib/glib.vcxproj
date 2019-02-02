@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClInclude Include="include\glib\glib.h" />
     <ClInclude Include="include\glib\std.h" />
-    <ClInclude Include="_extern\bitmap.h" />
     <ClInclude Include="include\glib\sys\event.h" />
     <ClInclude Include="include\glib\sys\graphics.h" />
     <ClInclude Include="include\glib\sys\window.h" />
@@ -30,7 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="_extern\bitmap.c" />
     <ClCompile Include="src\event.c" />
     <ClCompile Include="src\glib.c" />
     <ClCompile Include="src\graphics.c" />

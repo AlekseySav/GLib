@@ -48,16 +48,23 @@
 #endif
 
 #ifdef _USES_WINDOWS_DRIVER
+typedef __int8 int8;
+typedef __int16 int16;
+typedef __int32 int32;
 typedef unsigned __int8 u_int8;
 typedef unsigned __int16 u_int16;
 typedef unsigned __int32 u_int32;
 #else
+typedef int8_t int8;
+typedef int16_t int16;
+typedef int32_t int32;
 typedef unsigned int8_t u_int8;
 typedef unsigned int16_t u_int16;
 typedef unsigned int32_t u_int32;
 #endif
 
 typedef unsigned int u_int;
+
 typedef u_int8 byte;
 typedef u_int16 word;
 typedef u_int32 dword;

@@ -27,4 +27,13 @@
 	const RGBA RGB_YELLOW = COLOR(255, 255, 0, 255);
 #endif
 
+#undef EVENT_FIRST_ARG
+#undef EVENT_SECOND_ARG
+
+#define EVENT_FIRST_ARG(flag) (u_int32)(u_int16)(flag & 0xffff)
+#define EVENT_SECOND_ARG(flag) (u_int32)(u_int16)((flag >> 16) & 0xffff)
+
+#define EVENT_MOUSE_X(args) ((int32)(int16)EVENT_FIRST_ARG(args->flag2))
+#define EVENT_MOUSE_Y(args) ((int32)(int16)EVENT_SECOND_ARG(args->flag2))
+
 #endif
