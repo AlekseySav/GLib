@@ -2,12 +2,29 @@
 
 #ifdef _GLIB
 
-#undef POINT
-#undef COLOR
+#ifndef POINT
+	#define POINT glibCreatePoint
+#endif
 
-#define POINT glibCreatePoint
-#define COLOR glibCreateRGBA
-#define TEXT(_const_char_ptr_) ((char *)_const_char_ptr_)
+#ifndef COLOR
+	#define COLOR glibCreateRGBA
+#endif
+
+#ifndef TEXT
+	#ifdef __cplusplus
+		#define TEXT(_const_char_ptr_) ((char *)((void *)((const char *)(_const_char_ptr_))))
+	#else
+		#define TEXT(_const_char_ptr_) ((char *)(_const_char_ptr_))
+	#endif
+#endif
+
+#ifndef WINDOW_HANDLE
+	#ifdef __cplusplus
+		#define WINDOW_HANDLE(handle) ((Window)((Window__ *)((void *)((Handle)(handle)))))
+	#else
+		#define WINDOW_HANDLE(handle) ((Window)((struct Window__ *)(handle)))
+	#endif
+#endif
 
 #ifndef __cplusplus
 	#define COLOR_BLACK COLOR(0, 0, 0, 255)
@@ -27,15 +44,25 @@
 	const RGBA COLOR_YELLOW = COLOR(255, 255, 0, 255);
 #endif
 
-#undef EVENT_FIRST_ARG
-#undef EVENT_SECOND_ARG
+#ifndef FLAG_INCLUDES
+	#define FLAG_INCLUDES(flag, value) ((bool)((u_int32)(flag & value)))
+#endif
 
-#define EVENT_FIRST_ARG(flag) (u_int32)(u_int16)(flag & 0xffff)
-#define EVENT_SECOND_ARG(flag) (u_int32)(u_int16)((flag >> 16) & 0xffff)
+#ifndef FIRST_WORD
+	#define FIRST_WORD(dword) (u_int32)(u_int16)(dword & 0xffff)
+#endif
 
-#define EVENT_MOUSE_X(args) ((int32)(int16)EVENT_FIRST_ARG(args->flag1))
-#define EVENT_MOUSE_Y(args) ((int32)(int16)EVENT_SECOND_ARG(args->flag1))
+#ifndef SECOND_WORD
+	#define SECOND_WORD(dword) (u_int32)(u_int16)((dword >> 16) & 0xffff)
+#endif
 
+#ifndef EVENT_MOUSE_X
+#define EVENT_MOUSE_X(args) ((int32)(int16)FIRST_WORD(args->flag1))
+#endif
+
+#ifndef EVENT_MOUSE_Y
+#define EVENT_MOUSE_Y(args) ((int32)(int16)SECOND_WORD(args->flag1))
+#endif
 
 #define KEY_BACKSPACE			0x0008
 #define KEY_TAB					0x0009
@@ -188,31 +215,30 @@
 #define KEY_LAUNCH_APP1			0x00b6
 #define KEY_LAUNCH_APP2			0x00b7
 
-#define KEY_OEM_1				0x00ba		//для стандартной клавиатуры США клавиша ';:'
-#define KEY_OEM_PLUS			0x00bb		//клавиша « + »
-#define KEY_OEM_COMMA			0x00bc		//клавиша ','
-#define KEY_OEM_MINUS			0x00bd		//клавиша « - »
-#define KEY_OEM_PERIOD			0x00be		// «.» ключ
-#define KEY_OEM_2				0x00bf		//для стандартной клавиатуры США, « / ? » ключ
-#define KEY_OEM_3				0x00c0		//для стандартной клавиатуры США клавиша «~»
+#define KEY_SEMICOLON			0x00ba
+#define KEY_PLUS				0x00bb
+#define KEY_COMMA				0x00bc
+#define KEY_MINUS				0x00bd
+#define KEY_POINT				0x00be
+#define KEY_SLASH				0x00bf
+#define KEY_WAVE				0x00c0
 
-#define KEY_OEM_4				0x00db		//для стандартной клавиатуры США клавиша '[{'
-#define KEY_OEM_5				0x00dc		//для стандартной клавиатуры США '\ |' ключ
-#define KEY_OEM_6				0x00dd 		//для стандартной клавиатуры США клавиша ']}'
-#define KEY_OEM_7				0x00de		//для стандартной клавиатуры США клавиша «одинарные кавычки / двойные кавычки»
-#define KEY_OEM_8				0x00df		//NULL
+#define KEY_SQUAREBRACKET_LEFT	0x00db
+#define KEY_BACKSLASH			0x00dc
+#define KEY_SQUAREBRACKET_RIGHT	0x00dd
+#define KEY_INVERTED_COMMAS		0x00de
 
 #define KEY_OEM_102				0x00e2		//клавиша «<>» или «\ | » клавиша на клавиатуре RT 102 - клавишная
-#define KEY_PROCESSKEY			0x00e5		//клавиша ПРОЦЕСС I
+#define KEY_PROCESSKEY			0x00e5
 #define KEY_PACKET				0x00e7		//используется для передачи символов Юникода, как если бы они были нажатиями клавиш.Ключ VK_PACKET - это младшее слово 32 - битного значения виртуального ключа, используемого для не клавиатурных методов ввода.Символ Unicode - это высокое слово.
 
-#define KEY_ATTN				0x00f6		//Ключ Attn
-#define KEY_CRSEL				0x00f7		//Ключ CrSel
-#define KEY_EXSEL				0x00f8		//Ключ ExSel
-#define KEY_EREOF				0x00f9		//Стереть EOF ключ
-#define KEY_PLAY				0x00fa		//Клавиша воспроизведения
-#define KEY_ZOOM				0x00fb		//Кнопка масштабирования
-#define KEY_PA1					0x00fd		//Ключ PA1
-#define KEY_OEM_CLEAR			0x00fe		//Очистить ключ
+#define KEY_ATTN				0x00f6
+#define KEY_CRSEL				0x00f7
+#define KEY_EXSEL				0x00f8
+#define KEY_ERASE_EOF			0x00f9
+#define KEY_PLAY				0x00fa
+#define KEY_ZOOM				0x00fb
+#define KEY_PA1					0x00fd
+#define KEY_OEM_CLEAR			0x00fe
 
 #endif
