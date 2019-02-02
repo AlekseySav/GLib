@@ -158,96 +158,116 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_LBUTTONDOWN:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
 			args.msg = EVENT_MOUSEDOWN;
-			args.flag1 = EVENT_MOUSE_LEFTBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_LEFTBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_MBUTTONDOWN:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
 			args.msg = EVENT_MOUSEDOWN;
-			args.flag1 = EVENT_MOUSE_MIDDLEBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_MIDDLEBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_RBUTTONDOWN:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
 			args.msg = EVENT_MOUSEDOWN;
-			args.flag1 = EVENT_MOUSE_RIGHTBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_RIGHTBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_XBUTTONDOWN:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEDOWN)) {
 			args.msg = EVENT_MOUSEDOWN;
-			args.flag1 = EVENT_MOUSE_XBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			if ((u_int16)((wp >> 16) & 0xffff) == 1) args.flag2 = EVENT_MOUSE_X1BUTTON;
+			else args.flag2 = EVENT_MOUSE_X1BUTTON;
+
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_LBUTTONUP:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
 			args.msg = EVENT_MOUSEUP;
-			args.flag1 = EVENT_MOUSE_LEFTBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_LEFTBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_MBUTTONUP:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
 			args.msg = EVENT_MOUSEUP;
-			args.flag1 = EVENT_MOUSE_MIDDLEBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_MIDDLEBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_RBUTTONUP:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
 			args.msg = EVENT_MOUSEUP;
-			args.flag1 = EVENT_MOUSE_RIGHTBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_RIGHTBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_XBUTTONUP:
 		if (glibCheckWindowEvent(w, EVENT_MOUSEUP)) {
 			args.msg = EVENT_MOUSEUP;
-			args.flag1 = EVENT_MOUSE_XBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			if ((u_int16)((wp >> 16) & 0xffff) == 1) args.flag2 = EVENT_MOUSE_X1BUTTON;
+			else args.flag2 = EVENT_MOUSE_X1BUTTON;
+
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_LBUTTONDBLCLK:
 		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
 			args.msg = EVENT_DOUBLECLICK;
-			args.flag1 = EVENT_MOUSE_LEFTBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_LEFTBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_MBUTTONDBLCLK:
 		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
 			args.msg = EVENT_DOUBLECLICK;
-			args.flag1 = EVENT_MOUSE_MIDDLEBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_MIDDLEBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_RBUTTONDBLCLK:
 		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
 			args.msg = EVENT_DOUBLECLICK;
-			args.flag1 = EVENT_MOUSE_RIGHTBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			args.flag2 = EVENT_MOUSE_RIGHTBUTTON;
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;
 	case WM_XBUTTONDBLCLK:
 		if (glibCheckWindowEvent(w, EVENT_DOUBLECLICK)) {
 			args.msg = EVENT_DOUBLECLICK;
-			args.flag1 = EVENT_MOUSE_XBUTTON;
-			args.flag2 = lp;
+			args.flag1 = lp;
+			if((u_int16)((wp >> 16) & 0xffff) == 1) args.flag2 = EVENT_MOUSE_X1BUTTON;
+			else args.flag2 = EVENT_MOUSE_X1BUTTON;
+
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_MOUSEMOVE:
+		if (glibCheckWindowEvent(w, EVENT_MOUSEMOVE)) {
+			args.msg = EVENT_MOUSEMOVE;
+			args.flag1 = lp;
+			return !glibRunWindowEvent(w, &args);
+		}
+		break;
+	case WM_KEYDOWN:
+		if (glibCheckWindowEvent(w, EVENT_KEYDOWN)) {
+			args.msg = EVENT_KEYDOWN;
+			args.flag1 = wp;	
 			return !glibRunWindowEvent(w, &args);
 		}
 		break;

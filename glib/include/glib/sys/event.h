@@ -9,12 +9,13 @@
 #define EVENT_MOVED			0x0020
 #define EVENT_DRAW			0x0040
 #define EVENT_MOUSEDOWN		0x0080
+#define EVENT_CLICK			EVENT_MOUSEDOWN
 #define EVENT_MOUSEUP		0x0100
 #define EVENT_DOUBLECLICK	0x0200
+#define EVENT_MOUSEMOVE		0x0400
+#define EVENT_KEYDOWN		0x0800
 
-#define EVENT_CLICK			EVENT_MOUSEDOWN
-
-#define EVENT_ALL			0x03ff
+#define EVENT_ALL			0x07ff
 
 typedef struct EventArgs__ {
 	Handle handle;
@@ -32,10 +33,11 @@ typedef void (* EventHandle)(EventArgs * args);
 #define EVENT_RESIZE_MINIMIZED 1
 #define EVENT_RESIZE_MAXIMIZED 2
 
-#define EVENT_MOUSE_LEFTBUTTON 0
-#define EVENT_MOUSE_MIDDLEBUTTON 1
+#define EVENT_MOUSE_LEFTBUTTON 1
 #define EVENT_MOUSE_RIGHTBUTTON 2
-#define EVENT_MOUSE_XBUTTON 3
+#define EVENT_MOUSE_MIDDLEBUTTON 3
+#define EVENT_MOUSE_X1BUTTON 4
+#define EVENT_MOUSE_X2BUTTON 5
 
 typedef struct EventHandles__ {
 	EventHandle basic;
@@ -48,6 +50,8 @@ typedef struct EventHandles__ {
 	EventHandle mousedown;
 	EventHandle mouseup;
 	EventHandle doubleclick;
+	EventHandle mousemove;
+	EventHandle keydown;
 } EventHandles;
 
 EXTERN void glibSetEvent(EventHandles * events, EventHandle handle, u_int type);

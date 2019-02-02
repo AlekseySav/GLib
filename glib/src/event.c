@@ -22,6 +22,10 @@ void glibSetEvent(EventHandles * events, EventHandle handle, u_int type)
 		events->mouseup = handle;
 	if (type & EVENT_DOUBLECLICK)
 		events->doubleclick = handle;
+	if (type & EVENT_MOUSEMOVE)
+		events->mousemove = handle;
+	if (type & EVENT_KEYDOWN)
+		events->keydown = handle;
 }
 
 bool glibRunEvent(EventHandles * events, EventArgs * args)
@@ -78,6 +82,16 @@ bool glibRunEvent(EventHandles * events, EventArgs * args)
 			events->doubleclick(args);
 		else return false;
 		break;
+	case EVENT_MOUSEMOVE:
+		if (events->mousemove != NULL)
+			events->mousemove(args);
+		else return false;
+		break;
+	case EVENT_KEYDOWN:
+		if (events->keydown != NULL)
+			events->keydown(args);
+		else return false;
+		break;
 	}
 	return true;
 }
@@ -106,6 +120,10 @@ bool glibCheckEvent(u_int type, EventHandles * events)
 		return events->mouseup != NULL;
 	case EVENT_DOUBLECLICK:
 		return events->doubleclick != NULL;
+	case EVENT_MOUSEMOVE:
+		return events->mousemove != NULL;
+	case EVENT_KEYDOWN:
+		return events->keydown != NULL;
 	default:
 		return false;
 	}
