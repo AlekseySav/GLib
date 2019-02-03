@@ -8,6 +8,8 @@
 #include "windows/gwindows.h"
 #endif
 
+#include "glib/std.h"
+
 typedef struct Window__ Window__;
 
 EXTERN u_int glib_min3(u_int x, u_int y, u_int z);

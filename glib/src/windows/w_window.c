@@ -19,7 +19,7 @@ DWORD WIN_Style(Window w)
 	if (style & STYLE_BASIC) ws |= (WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	if ((style & STYLE_FULLSCREEN) || (style & STYLE_NOBORDER)) ws |= WS_POPUP;
 	if (style & STYLE_MINIMIZEABLE) ws |= WS_MINIMIZEBOX;
-	if (style & STYLE_MAXIMAZE) ws |= WS_MAXIMIZEBOX;
+	if (style & STYLE_MAXIMIZEABLE) ws |= WS_MAXIMIZEBOX;
 	if (style & STYLE_OVERLAPPED) ws |= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
 	if (style & STATE_DISABLED) ws |= WS_DISABLED;
 	if (style & STYLE_THICKFRAME) ws |= WS_THICKFRAME;
@@ -93,7 +93,9 @@ int WIN_ShowWindow(Window w)
 
 int WIN_CloseWindow(Window w)
 {
-	return !DestroyWindow((HWND)w->ptr);
+	DestroyWindow((HWND)w->ptr);
+	if (glib_windows_count == 0) PostQuitMessage(0);
+	return 0;
 }
 
 void WIN_ChangeWindowPos(Window w)

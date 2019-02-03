@@ -22,7 +22,7 @@
 	#ifdef __cplusplus
 		#define WINDOW_HANDLE(handle) ((Window)((Window__ *)((void *)((Handle)(handle)))))
 	#else
-		#define WINDOW_HANDLE(handle) ((Window)((struct Window__ *)(handle)))
+		#define WINDOW_HANDLE(handle) ((struct Window__ *)(handle))
 	#endif
 #endif
 
@@ -33,7 +33,8 @@
 	#define COLOR_GREEN COLOR(0, 255, 0, 255)
 	#define COLOR_BLUE COLOR(0, 0, 255, 255)
 	#define COLOR_PURPLE COLOR(150, 0, 150, 255)
-	#define COLOR_YELLOW COLOR(255, 255, 0, 255);
+	#define COLOR_YELLOW COLOR(255, 255, 0, 255)
+	#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
 #else
 	const RGBA COLOR_BLACK = COLOR(0, 0, 0, 255);
 	const RGBA COLOR_WHITE = COLOR(255, 255, 255, 255);
@@ -42,41 +43,66 @@
 	const RGBA COLOR_BLUE = COLOR(0, 0, 255, 255);
 	const RGBA COLOR_PURPLE = COLOR(150, 0, 150, 255);
 	const RGBA COLOR_YELLOW = COLOR(255, 255, 0, 255);
+	const RGBA COLOR_TRANSPARENT = COLOR(0, 0, 0, 0);
 #endif
 
 #ifndef FLAG_INCLUDES
 	#define FLAG_INCLUDES(flag, value) ((bool)((u_int32)(flag & value)))
 #endif
 
-#ifndef FIRST_WORD
-	#define FIRST_WORD(dword) (u_int32)(u_int16)(dword & 0xffff)
+#ifndef LITTLE_WORD
+	#define LITTLE_WORD(_dword) (u_int32)(u_int16)(_dword & 0xffff)
 #endif
 
-#ifndef SECOND_WORD
-	#define SECOND_WORD(dword) (u_int32)(u_int16)((dword >> 16) & 0xffff)
+#ifndef BIG_WORD
+	#define BIG_WORD(_dword) (u_int32)(u_int16)((_dword >> 16) & 0xffff)
 #endif
 
-#ifndef EVENT_MOUSE_X
-#define EVENT_MOUSE_X(args) ((int32)(int16)FIRST_WORD(args->flag1))
+#ifndef EVENT_X_POSITION
+	#define EVENT_X_POSITION(args) ((u_int32)((int32)(int16)LITTLE_WORD(args->flag1)))
 #endif
 
-#ifndef EVENT_MOUSE_Y
-#define EVENT_MOUSE_Y(args) ((int32)(int16)SECOND_WORD(args->flag1))
+#ifndef EVENT_Y_POSITION
+	#define EVENT_Y_POSITION(args) ((u_int32)((int32)(int16)BIG_WORD(args->flag1)))
 #endif
+
+#ifndef WINDOW_FAILED
+	#define WINDOW_FAILED(w) (FLAG_INCLUDES(SYS_FAILED, w->flags))
+#endif
+
+#undef MAKE_WORD
+#undef MAKE_DWORD
+#undef FREE_WORD
+#undef FREE_DWORD
+
+#define MAKE_WORD(byte1, byte2) ((word)((byte1 & 0xff) | ((byte2 & 0xff) << 8)))
+#define MAKE_DWORD(byte1, byte2, byte3, byte4) ((word)((byte1 & 0xff) | ((byte2 & 0xff) << 8) | ((byte3 & 0xff) << 16) | ((byte4 & 0xff) << 24)))
+#define FREE_WORD(_word, byte_ptr) do { *byte_ptr = (byte)(_word & 0xff); *(byte_ptr + 1) = (byte)((_word >> 8) & 0xff); } while(0)
+#define FREE_DWORD(_dword, byte_ptr) do { *byte_ptr = (byte)(_dword & 0xff); *(byte_ptr + 1) = (byte)((_dword >> 8) & 0xff); \
+								*(byte_ptr + 2) = (byte)((_dword >> 16) & 0xff); *(byte_ptr + 3) = (byte)((_dword >> 24) & 0xff);} while(0)
+
+#define MOUSE_LEFTBUTTON		0x0001
+#define MOUSE_RIGHTBUTTON 		0x0002
+#define MOUSE_MIDDLEBUTTON 		0x0003
+#define MOUSE_X1BUTTON 			0x0004
+#define MOUSE_X2BUTTON 			0x0005
 
 #define KEY_BACKSPACE			0x0008
 #define KEY_TAB					0x0009
 #define KEY_CLEAR				0x000c
 #define KEY_RETURN				0x000d
+
 #define KEY_SHIFT				0x0010
 #define KEY_CTRL				0x0011
 #define KEY_ALT					0x0012
 #define KEY_PAUSE				0x0013
 #define KEY_CAPSLOCK			0x0014
+
 #define KEY_KANA				0x0015
 #define KEY_JUNJA				0x0017
 #define KEY_FINAL				0x0018
 #define KEY_HANJA				0x0019
+
 #define KEY_ESCAPE				0x0018
 #define KEY_CONVERT				0x001c
 #define KEY_NOCONVERT			0x001d
@@ -93,7 +119,11 @@
 #define KEY_DOWN_ARROW			0x0028
 #define KEY_SELECT				0x0029
 #define KEY_PRINT				0x002a
-#define KEY_EXECUTE				0x002b
+
+#ifndef KEY_EXECUTE
+	#define KEY_EXECUTE				0x002b
+#endif
+
 #define KEY_SNAPSHOT			0x002c
 #define KEY_INSERT				0x002d
 #define KEY_DELETE				0x002d
@@ -230,7 +260,9 @@
 
 #define KEY_OEM_102				0x00e2		//клавиша «<>» или «\ | » клавиша на клавиатуре RT 102 - клавишная
 #define KEY_PROCESSKEY			0x00e5
-#define KEY_PACKET				0x00e7		//используется для передачи символов Юникода, как если бы они были нажатиями клавиш.Ключ VK_PACKET - это младшее слово 32 - битного значения виртуального ключа, используемого для не клавиатурных методов ввода.Символ Unicode - это высокое слово.
+#define KEY_PACKET				0x00e7		//используется для передачи символов Юникода, как если бы они были нажатиями клавиш.
+	//Ключ VK_PACKET - это младшее слово 32 - битного значения виртуального ключа, используемого 
+	//для не клавиатурных методов ввода.Символ Unicode - это высокое слово.
 
 #define KEY_ATTN				0x00f6
 #define KEY_CRSEL				0x00f7
@@ -240,5 +272,7 @@
 #define KEY_ZOOM				0x00fb
 #define KEY_PA1					0x00fd
 #define KEY_OEM_CLEAR			0x00fe
+
+EXTERN Point Mouse;
 
 #endif

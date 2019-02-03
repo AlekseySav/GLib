@@ -1,5 +1,7 @@
 #include "glib_src.h"
 
+Point Mouse;
+
 int glibLoop()
 {
 	return EX_MainLoop();

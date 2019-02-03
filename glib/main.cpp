@@ -3,35 +3,23 @@
 
 void draw(EventArgs * args)
 {
-	static long a = 1;
-	static u_int x = 0, y = 100;
-
 	Window w = WINDOW_HANDLE(args->handle);
-	x = w->width / 2;
 	Image image = glibCreateImage(w->width, w->height);
-
-	glibFillImage(image, COLOR_BLUE);
-	glibFillCircle(image, POINT(x, y), 100, COLOR_PURPLE);
-
-	a += 1;
-	y += a;
-	if (y >= w->height - 100)
-	{
-		y = w->height - 100;
-		a = -a;
-	}
-
-	if(!FLAG_INCLUDES(args->msg, EVENT_DRAW)) glibStartWindowDraw(w);
-
-	glibDrawImageNoRelease(image, w);
-	glibReleaseImage(image);
+	glibFillImage(image, COLOR_BLACK);
+	glibDrawLine(image, POINT(0, 0), POINT(w->width, w->height), COLOR(255, 0, 0, 50), 3L);
+	glibDrawLine(image, POINT(w->width, 0), POINT(0, w->height), COLOR(0, 255, 0, 50), 3L);
+	glibFillCircle(image, POINT(Mouse.x, Mouse.y), 50, COLOR(255, 255, 255, 150));
+	
+	glibStartWindowDraw(w);
+	glibDrawImage(image, w);
 }
 
 int gmain(char * argv[], int argc)
 {
-	Window w = glibCreateWindow(TEXT("Ball falled))"), 100, 100, 535, 350, STYLE_NORMAL, NULL);
+	Window w = glibCreateWindow(TEXT("Hello, world!"), 100, 100, 535, 350, STYLE_NORMAL, NULL);
+	if WINDOW_FAILED(w) return 1;
 
-	glibSetWindowEvent(w, draw, EVENT_DRAW | EVENT_BASIC);
+	glibSetWindowEvent(w, draw, EVENT_MOUSEMOVE);
 	glibShowWindow(w);
 
 	return glibLoop();
