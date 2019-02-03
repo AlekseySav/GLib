@@ -99,7 +99,6 @@ EXTERN_C int gmain(char * argv[], int argc);
 
 typedef void * Handle;
 
-#include "sys/keycodes.h"
 #include "sys/event.h"
 #include "sys/graphics.h"
 #include "sys/window.h"
