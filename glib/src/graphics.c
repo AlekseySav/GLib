@@ -1,23 +1,5 @@
 #include "glib_src.h"
 
-Point glibCreatePoint(u_int x, u_int y)
-{
-	Point p;
-	p.x = x;
-	p.y = y;
-	return p;
-}
-
-RGBA glibCreateRGBA(byte r, byte g, byte b, byte alpha)
-{
-	RGBA clr;
-	clr.r = r;
-	clr.g = g;
-	clr.b = b;
-	clr.a = alpha;
-	return clr;
-}
-
 Image glibCreateImage(u_int width, u_int height)
 {
 	Image im = (Image)malloc(sizeof(struct Image__));
@@ -29,16 +11,16 @@ Image glibCreateImage(u_int width, u_int height)
 	return im;
 }
 
-void glibFillImage(Image im, RGBA fill)
+void glibFillImage(Image im, ARGB fill)
 {
 	for (u_int y = 0; y < im->height; y++)
 		for (u_int x = 0; x < im->width; x++)
-			*((RGBA *)im->image + im->width * y + x) = fill;
+			*((ARGB *)im->image + im->width * y + x) = fill;
 }
 
-RGBA glibPixel(RGBA clr, RGBA add)
+ARGB glibPixel(ARGB clr, ARGB add)
 {
-	RGBA res;
+	ARGB res;
 	res.a = add.a + (clr.a * (255 - add.a)) / 255;
 	if (res.a == 0)
 	{
@@ -55,16 +37,17 @@ RGBA glibPixel(RGBA clr, RGBA add)
 	return res;
 }
 
-void glibDrawPoint(Image im, Point p, RGBA fill)
+void glibDrawPoint(Image im, Point p, ARGB fill)
 {
 	if (p.x >= im->width || p.x < 0 || p.y >= im->height || p.y < 0) return;
+	if (fill.a == 0) return;
 
-	RGBA * point = (((RGBA *)im->image) + p.y * im->width + p.x);
-	RGBA clr = glibPixel(*point, fill);
+	ARGB * point = (((ARGB *)im->image) + p.y * im->width + p.x);
+	ARGB clr = glibPixel(*point, fill);
 	*point = clr;
 }
 
-void glibDrawStrength(Image im, Point p, u_int sizex, u_int sizey, RGBA color, bool fillax, bool fillbx, bool fillay, bool fillby, bool fillov)
+void glibDrawStrength(Image im, Point p, u_int sizex, u_int sizey, ARGB color, bool fillax, bool fillbx, bool fillay, bool fillby, bool fillov)
 {
 	if (sizex == 1 && sizey == 1)
 	{
@@ -76,86 +59,96 @@ void glibDrawStrength(Image im, Point p, u_int sizex, u_int sizey, RGBA color, b
 	{
 		for (u_int y = 0; y < sizey; y++)
 			for (u_int x = 0; x < sizex; x++)
-				glibDrawPoint(im, glibCreatePoint(p.x + x, p.y + y), color);
+				glibDrawPoint(im, (Point){ p.x + x, p.y + y }, color);
 		return;
 	}
 
 	if (fillay)
 		for (u_int y = 0; y < sizey; y++)
-			glibDrawPoint(im, glibCreatePoint(p.x, p.y + y), color);
+			glibDrawPoint(im, (Point){ p.x, p.y + y }, color);
 	if (fillax)
 		for (u_int x = 0; x < sizex; x++)
-			glibDrawPoint(im, glibCreatePoint(p.x + x, p.y), color);
+			glibDrawPoint(im, (Point) { p.x + x, p.y }, color);
 	if (fillby)
 		for (u_int y = 0; y < sizey; y++)
-			glibDrawPoint(im, glibCreatePoint(p.x + sizex, p.y + y), color);
+			glibDrawPoint(im, (Point) {	p.x + sizex, p.y + y }, color);
 	if (fillbx)
 		for (u_int x = 0; x < sizex; x++)
-			glibDrawPoint(im, glibCreatePoint(p.x + x, p.y + sizey), color);
-	glibDrawPoint(im, glibCreatePoint(p.x + sizex, p.y + sizey), color);
+			glibDrawPoint(im, (Point) { p.x + x, p.y + sizey }, color);
+	glibDrawPoint(im, (Point) { p.x + sizex, p.y + sizey }, color);
 }
 
-void glibFillSquare(Image im, Point p, u_int side, RGBA color)
+void glibDrawRectangle(Image im, struct Rect rect, ARGB fill, ARGB border, long wide)
 {
-	if (side == 1)
-	{
-		glibDrawPoint(im, p, color);
-		return;
-	}
+	Point p1 = rect.point1, p2 = rect.point2;
 
-	for (u_int y = 0; y < side; y++)
-		for (u_int x = 0; x < side; x++)
-			glibDrawPoint(im, glibCreatePoint(p.x + x, p.y + y), color);
-}
-
-void glibFillRectangle(Image im, Point p1, Point p2, RGBA color)
-{
 	if (p1.x > p2.x) MOVE_VARIBLES(p1.x, p2.x);
 	if (p1.y > p2.y) MOVE_VARIBLES(p1.y, p2.y);
 
 	for (u_int y = p1.y; y < p2.y; y++)
 		for (u_int x = p1.x; x < p2.x; x++)
-			glibDrawPoint(im, glibCreatePoint(x, y), color);
-}
-
-void glibFillTriangle(Image im, Point p1, Point p2, Point p3, RGBA color)
-{
-	long a1 = p1.x - p2.x;
-	long a2 = p2.x - p3.x;
-	long a3 = p3.x - p1.x;
-
-	long b1 = p2.y - p1.y;
-	long b2 = p3.y - p2.y;
-	long b3 = p1.y - p3.y;
-
-	Point min = glibCreatePoint(glib_min3(p1.x, p2.x, p3.x), glib_min3(p1.y, p2.y, p3.y));
-	Point max = glibCreatePoint(glib_max3(p1.x, p2.x, p3.x), glib_max3(p1.y, p2.y, p3.y));
-
-	for (u_int x = min.x; x < max.x; x++)
-		for (u_int y = min.y; y < max.y; y++)
 		{
-			bool a = (long)(p1.x - x) * b1 + (long)(p1.y - y) * a1 >= 0;
-			bool b = (long)(p2.x - x) * b2 + (long)(p2.y - y) * a2 >= 0;
-			bool c = (long)(p3.x - x) * b3 + (long)(p3.y - y) * a3 >= 0;
-
-			if ((a && b) && c) glibDrawPoint(im, glibCreatePoint(x, y), color);
+			if(y <= wide + p1.y || y >= p2.y - wide || x <= wide + p1.x || x >= p2.x - wide)
+				glibDrawPoint(im, (Point) { x, y }, border);
+			else
+				glibDrawPoint(im, (Point) { x, y }, fill);
 		}
 }
 
-void glibFillCircle(Image im, Point center, u_int radius, RGBA color)
+void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color, ARGB border, long wide)
 {
-	long r_len = radius * radius;
-	for (long x = center.x - radius; x < (long)(center.x + radius); x++)
-		for (long y = center.y - radius; y < (long)(center.y + radius); y++)
-		{
-			long x_len = x - center.x;
-			long y_len = y - center.y;
-			if (x_len * x_len + y_len * y_len <= r_len) glibDrawPoint(im, glibCreatePoint(x, y), color);
-		}
+	//Point p1 = triangle.point1, p2 = triangle.point2, p3 = triangle.point3;
+
+	//long a1 = p1.x - p2.x;
+	//long a2 = p2.x - p3.x;
+	//long a3 = p3.x - p1.x;
+
+	//long b1 = p2.y - p1.y;
+	//long b2 = p3.y - p2.y;
+	//long b3 = p1.y - p3.y;
+
+	////long l12 = p1.x + p1.y - p2.x - p2.y;
+
+	//Point min = { glib_min3(p1.x, p2.x, p3.x), glib_min3(p1.y, p2.y, p3.y) };
+	//Point max = { glib_max3(p1.x, p2.x, p3.x), glib_max3(p1.y, p2.y, p3.y) };
+
+	//for (u_int x = min.x; x < max.x; x++)
+	//	for (u_int y = min.y; y < max.y; y++)
+	//	{
+	//		long a = (long)(p1.x - x) * b1 + (long)(p1.y - y) * a1;
+	//		long b = (long)(p2.x - x) * b2 + (long)(p2.y - y) * a2;
+	//		long c = (long)(p3.x - x) * b3 + (long)(p3.y - y) * a3;
+
+	//		if (a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0)
+	//		{
+	//			//if(a + wide >= l12 || b + wide >= 0 || c + wide >= -200)
+	//				glibDrawPoint(im, (Point)(x, y), color);
+	//		}
+	//	}
 }
 
-void glibDrawLine(Image im, Point p1, Point p2, RGBA color, long wide)
+void glibDrawEllipse(Image im, struct Ellipse ellipse, ARGB fill, ARGB border, long wide)
 {
+	long lx = ellipse.radius_x * ellipse.radius_x, ly = ellipse.radius_y * ellipse.radius_y, l = lx * ly;
+	long mlx = (ellipse.radius_x - wide) * (ellipse.radius_x - wide), mly = (ellipse.radius_y - wide) * (ellipse.radius_y - wide), ml = lx * ly;
+
+	for (long y = ellipse.center.y - ellipse.radius_y; y < (long)ellipse.center.y + ellipse.radius_y; y++)
+	{
+		long yy = (y - ellipse.center.y);
+		for (long x = ellipse.center.x - ellipse.radius_x; x < (long)ellipse.center.x + ellipse.radius_x; x++)
+		{
+			long xx = (x - ellipse.center.x);
+			
+			if (xx * xx * ly + yy * yy * lx >= l) glibDrawPoint(im, (Point) { x, y }, border);
+			if (xx * xx * mly + yy * yy * mlx <= ml) glibDrawPoint(im, (Point) { x, y }, fill);
+		}
+	}
+}
+
+void glibDrawLine(Image im, struct Line line, ARGB color, long wide)
+{
+	Point p1 = line.point1, p2 = line.point2;
+
 	bool reversed = (glib_abs((long)(p2.x - p1.x)) < glib_abs((long)(p2.y - p1.y)));
 	bool over = false;
 	bool first = true;
@@ -185,80 +178,27 @@ void glibDrawLine(Image im, Point p1, Point p2, RGBA color, long wide)
 			if (over)
 			{
 				if (reversed)
-					glibDrawStrength(im, glibCreatePoint(y - wide / 2 + 1, x - wide / 2), wide, wide, color, false, true, y != prevy, false, false);
+					glibDrawStrength(im, (Point) { y - wide / 2 + 1, x - wide / 2 }, wide, wide, color, false, true, y != prevy, false, false);
 				else
-					glibDrawStrength(im, glibCreatePoint(x - wide / 2, y - wide / 2 + 1), wide, wide, color, y != prevy, false, false, true, false);
+					glibDrawStrength(im, (Point) { x - wide / 2, y - wide / 2 + 1 }, wide, wide, color, y != prevy, false, false, true, false);
 			}
 			else
 			{
 				if (reversed)
-					glibDrawStrength(im, glibCreatePoint(y - wide / 2, x - wide / 2), wide, wide, color, false, true, false, y != prevy, false);
+					glibDrawStrength(im, (Point) { y - wide / 2, x - wide / 2 }, wide, wide, color, false, true, false, y != prevy, false);
 				else
-					glibDrawStrength(im, glibCreatePoint(x - wide / 2, y - wide / 2), wide, wide, color, false, y != prevy, false, true, false);
+					glibDrawStrength(im, (Point) { x - wide / 2, y - wide / 2 }, wide, wide, color, false, y != prevy, false, true, false);
 			}
 		}
 		else
 		{
 			if (reversed)
-				glibDrawStrength(im, glibCreatePoint(y - wide / 2 + 1, x - wide / 2 + 1), wide, wide, color, false, false, false, false, true);
+				glibDrawStrength(im, (Point) { y - wide / 2 + 1, x - wide / 2 + 1 }, wide, wide, color, false, false, false, false, true);
 			else
-				glibDrawStrength(im, glibCreatePoint(x - wide / 2 + 1, y - wide / 2 + 1), wide, wide, color, false, false, false, true, true);
+				glibDrawStrength(im, (Point) { x - wide / 2 + 1, y - wide / 2 + 1 }, wide, wide, color, false, false, false, true, true);
 			first = false;
 		}
 		prevy = y;
-	}
-}
-
-void glibDrawRectangle(Image im, Point p1, Point p2, RGBA color, long wide)
-{
-	glibDrawLine(im, glibCreatePoint(p1.x, p1.y), glibCreatePoint(p2.x, p1.y), color, wide);
-	glibDrawLine(im, glibCreatePoint(p1.x, p1.y), glibCreatePoint(p1.x, p2.y), color, wide);
-	glibDrawLine(im, glibCreatePoint(p2.x, p2.y), glibCreatePoint(p2.x, p1.y), color, wide);
-	glibDrawLine(im, glibCreatePoint(p2.x, p2.y), glibCreatePoint(p1.x, p2.y), color, wide);
-}
-
-void glibDrawTriangle(Image im, Point p1, Point p2, Point p3, RGBA color, long wide)
-{
-	glibDrawLine(im, p1, p2, color, wide);
-	glibDrawLine(im, p2, p3, color, wide);
-	glibDrawLine(im, p3, p1, color, wide);
-}
-
-#define DRAW_UNDERLINE(im, point, wide, color) for(u_int i = 0; i < wide; i++) glibDrawPoint(im, glibCreatePoint(point.x + i, point.y), im)
-
-void glibDrawCircle(Image im, Point center, u_int radius, RGBA color, long wide)
-{
-	if (wide == 1)
-	{
-		long x = 0;
-		long y = radius;
-		long delta = 1 - 2 * radius;
-		long error = 0;
-		while (y >= 0)
-		{
-			glibDrawPoint(im, glibCreatePoint(center.x + x, center.y + y), color);
-			glibDrawPoint(im, glibCreatePoint(center.x + x, center.y - y), color);
-			glibDrawPoint(im, glibCreatePoint(center.x - x, center.y + y), color);
-			glibDrawPoint(im, glibCreatePoint(center.x - x, center.y - y), color);
-			error = 2 * (delta + y) - 1;
-			if ((delta < 0) && (error <= 0))
-			{
-				delta += 2 * ++x + 1;
-				continue;
-			}
-			if ((delta > 0) && (error > 0))
-			{
-				delta -= 2 * --y + 1;
-				continue;
-			}
-			delta += 2 * (++x - y--);
-		}
-	}
-
-	else
-	{
-		for (long i = (long)radius; i < (long)(wide + radius); i++)
-			glibDrawCircle(im, center, (u_int)i, color, 1L);
 	}
 }
 

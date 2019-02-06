@@ -1,8 +1,7 @@
 #pragma once
 
 #ifndef _GLIB
-	#define _GLIB 3
-#endif
+#define _GLIB 3
 
 #undef _USES_WINDOWS_DRIVER
 #undef _USES_LINUX_DRIVER
@@ -102,3 +101,5 @@ typedef void * Handle;
 #include "sys/event.h"
 #include "sys/graphics.h"
 #include "sys/window.h"
+
+#endif

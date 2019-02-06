@@ -8,6 +8,10 @@
 #include "windows/gwindows.h"
 #endif
 
+#ifndef __GLIB_SRC
+#define __GLIB_SRC
+#endif
+
 #include "glib/std.h"
 
 typedef struct Window__ Window__;

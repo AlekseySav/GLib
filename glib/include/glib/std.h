@@ -2,12 +2,60 @@
 
 #ifdef _GLIB
 
-#ifndef POINT
-	#define POINT glibCreatePoint
-#endif
+#ifndef __GLIB_SRC
+	#ifndef __cplusplus
+		#ifndef POINT
+			#define POINT(x, y) ((Point) { x, y })
+		#endif
 
-#ifndef COLOR
-	#define COLOR glibCreateRGBA
+		#ifndef COLOR
+			#define COLOR(a, r, g, b) ((ARGB) { a, r, g, b })
+		#endif
+
+		#ifndef LINE
+			#define LINE(point1, point2) ((Line) { point1, point2 })
+		#endif
+
+		#ifndef RECT
+			#define RECT(point1, point2) ((Rect) { point1, point2 })
+		#endif
+
+		#ifndef TRIANGLE
+			#define TRIANGLE(point1, point2, point3)  ((Triangle) { point1, point2, point3 })
+		#endif
+
+		#ifndef ELLIPSE
+			#define ELLIPSE glibCreateEllipse
+		#endif
+	#else
+		#ifndef POINT
+			#define POINT(x, y) (Point { x, y })
+		#endif
+
+		#ifndef COLOR
+			#define COLOR(a, r, g, b) (ARGB { a, r, g, b })
+		#endif
+
+		#ifndef LINE
+			#define LINE(point1, point2) (Line { point1, point2 })
+		#endif
+
+		#ifndef RECT
+			#define RECT(point1, point2) (Rect { point1, point2 })
+		#endif
+
+		#ifndef TRIANGLE
+			#define TRIANGLE(point1, point2, point3) (Triangle { point1, point2, point3 })
+		#endif
+
+		#ifndef ELLIPSE
+			#define ELLIPSE(center, radius_x, radius_y) (Ellipse { center, radius_x, radius_y })
+		#endif
+	#endif
+
+	#ifndef CIRCLE
+		#define CIRCLE(center, radius) ELLIPSE(center, radius, radius)
+	#endif
 #endif
 
 #ifndef TEXT
@@ -22,29 +70,18 @@
 	#ifdef __cplusplus
 		#define WINDOW_HANDLE(handle) ((Window)((Window__ *)((void *)((Handle)(handle)))))
 	#else
-		#define WINDOW_HANDLE(handle) ((struct Window__ *)(handle))
+		#define WINDOW_HANDLE(handle) ((struct Window__ *)((Handle)(handle)))
 	#endif
 #endif
 
-#ifndef __cplusplus
-	#define COLOR_BLACK COLOR(0, 0, 0, 255)
-	#define COLOR_WHITE COLOR(255, 255, 255, 255)
-	#define COLOR_RED COLOR(255, 0, 0, 255)
-	#define COLOR_GREEN COLOR(0, 255, 0, 255)
-	#define COLOR_BLUE COLOR(0, 0, 255, 255)
-	#define COLOR_PURPLE COLOR(150, 0, 150, 255)
-	#define COLOR_YELLOW COLOR(255, 255, 0, 255)
-	#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
-#else
-	const RGBA COLOR_BLACK = COLOR(0, 0, 0, 255);
-	const RGBA COLOR_WHITE = COLOR(255, 255, 255, 255);
-	const RGBA COLOR_RED = COLOR(255, 0, 0, 255);
-	const RGBA COLOR_GREEN = COLOR(0, 255, 0, 255);
-	const RGBA COLOR_BLUE = COLOR(0, 0, 255, 255);
-	const RGBA COLOR_PURPLE = COLOR(150, 0, 150, 255);
-	const RGBA COLOR_YELLOW = COLOR(255, 255, 0, 255);
-	const RGBA COLOR_TRANSPARENT = COLOR(0, 0, 0, 0);
-#endif
+#define COLOR_BLACK COLOR(255, 0, 0, 0)
+#define COLOR_WHITE COLOR(255, 255, 255, 255)
+#define COLOR_RED COLOR(255, 255, 0, 0)
+#define COLOR_GREEN COLOR(255, 0, 255, 0)
+#define COLOR_BLUE COLOR(255, 0, 0, 255)
+#define COLOR_PURPLE COLOR(255, 150, 0, 150)
+#define COLOR_YELLOW COLOR(255, 255, 255, 0)
+#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
 
 #ifndef FLAG_INCLUDES
 	#define FLAG_INCLUDES(flag, value) ((bool)((u_int32)(flag & value)))
@@ -80,6 +117,15 @@
 #define FREE_WORD(_word, byte_ptr) do { *byte_ptr = (byte)(_word & 0xff); *(byte_ptr + 1) = (byte)((_word >> 8) & 0xff); } while(0)
 #define FREE_DWORD(_dword, byte_ptr) do { *byte_ptr = (byte)(_dword & 0xff); *(byte_ptr + 1) = (byte)((_dword >> 8) & 0xff); \
 								*(byte_ptr + 2) = (byte)((_dword >> 16) & 0xff); *(byte_ptr + 3) = (byte)((_dword >> 24) & 0xff);} while(0)
+	
+#ifndef __cplusplus
+	#ifndef __GLIB_SRC
+		typedef struct Line Line;
+		typedef struct Rect Rect;
+		typedef struct Ellipse Ellipse;
+		typedef struct Triangle Triangle;
+	#endif
+#endif
 
 #define MOUSE_LEFTBUTTON		0x0001
 #define MOUSE_RIGHTBUTTON 		0x0002
