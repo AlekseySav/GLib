@@ -95,52 +95,51 @@ void glibDrawRectangle(Image im, struct Rect rect, ARGB fill, ARGB border, long 
 		}
 }
 
-void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color, ARGB border, long wide)
+void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color)
 {
-	//Point p1 = triangle.point1, p2 = triangle.point2, p3 = triangle.point3;
+	Point p1 = triangle.point1, p2 = triangle.point2, p3 = triangle.point3;
 
-	//long a1 = p1.x - p2.x;
-	//long a2 = p2.x - p3.x;
-	//long a3 = p3.x - p1.x;
+	long a1 = p1.x - p2.x;
+	long a2 = p2.x - p3.x;
+	long a3 = p3.x - p1.x;
 
-	//long b1 = p2.y - p1.y;
-	//long b2 = p3.y - p2.y;
-	//long b3 = p1.y - p3.y;
+	long b1 = p2.y - p1.y;
+	long b2 = p3.y - p2.y;
+	long b3 = p1.y - p3.y;
+	
+	Point min = { glib_min3(p1.x, p2.x, p3.x), glib_min3(p1.y, p2.y, p3.y) };
+	Point max = { glib_max3(p1.x, p2.x, p3.x), glib_max3(p1.y, p2.y, p3.y) };
 
-	////long l12 = p1.x + p1.y - p2.x - p2.y;
+	for (u_int x = min.x; x < max.x; x++)
+		for (u_int y = min.y; y < max.y; y++)
+		{
+			long a = (long)(p1.x - x) * b1 + (long)(p1.y - y) * a1;
+			long b = (long)(p2.x - x) * b2 + (long)(p2.y - y) * a2;
+			long c = (long)(p3.x - x) * b3 + (long)(p3.y - y) * a3;
 
-	//Point min = { glib_min3(p1.x, p2.x, p3.x), glib_min3(p1.y, p2.y, p3.y) };
-	//Point max = { glib_max3(p1.x, p2.x, p3.x), glib_max3(p1.y, p2.y, p3.y) };
-
-	//for (u_int x = min.x; x < max.x; x++)
-	//	for (u_int y = min.y; y < max.y; y++)
-	//	{
-	//		long a = (long)(p1.x - x) * b1 + (long)(p1.y - y) * a1;
-	//		long b = (long)(p2.x - x) * b2 + (long)(p2.y - y) * a2;
-	//		long c = (long)(p3.x - x) * b3 + (long)(p3.y - y) * a3;
-
-	//		if (a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0)
-	//		{
-	//			//if(a + wide >= l12 || b + wide >= 0 || c + wide >= -200)
-	//				glibDrawPoint(im, (Point)(x, y), color);
-	//		}
-	//	}
+			if (a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0)
+			{
+					glibDrawPoint(im, (Point) { x, y }, color);
+			}
+		}
 }
 
 void glibDrawEllipse(Image im, struct Ellipse ellipse, ARGB fill, ARGB border, long wide)
 {
 	long lx = ellipse.radius_x * ellipse.radius_x, ly = ellipse.radius_y * ellipse.radius_y, l = lx * ly;
-	long mlx = (ellipse.radius_x - wide) * (ellipse.radius_x - wide), mly = (ellipse.radius_y - wide) * (ellipse.radius_y - wide), ml = lx * ly;
 
-	for (long y = ellipse.center.y - ellipse.radius_y; y < (long)ellipse.center.y + ellipse.radius_y; y++)
+	long mlx = ((long)ellipse.radius_x + 2 * wide) * ((long)ellipse.radius_x + 2 * wide),
+		mly = ((long)ellipse.radius_y + 2 * wide) * ((long)ellipse.radius_y + 2 * wide), ml = lx * ly;
+
+	for (long y = ellipse.center.y - ellipse.radius_y; y < (long)ellipse.center.y + (long)ellipse.radius_y; y++)
 	{
 		long yy = (y - ellipse.center.y);
-		for (long x = ellipse.center.x - ellipse.radius_x; x < (long)ellipse.center.x + ellipse.radius_x; x++)
+		for (long x = ellipse.center.x - ellipse.radius_x; x < (long)ellipse.center.x + (long)ellipse.radius_x; x++)
 		{
 			long xx = (x - ellipse.center.x);
 			
-			if (xx * xx * ly + yy * yy * lx >= l) glibDrawPoint(im, (Point) { x, y }, border);
 			if (xx * xx * mly + yy * yy * mlx <= ml) glibDrawPoint(im, (Point) { x, y }, fill);
+			else if (xx * xx * ly + yy * yy * lx <= l) glibDrawPoint(im, (Point) { x, y }, border);
 		}
 	}
 }

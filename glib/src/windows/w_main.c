@@ -280,7 +280,7 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	return DefWinProc;
 }
 
-void WIN_DrawWindow(Image im, Window w)
+void WIN_DrawWindow(Image im, Window w, Point min, Point max)
 {
 	byte * ptr = (byte *)malloc(im->width * im->height * 4);
 	if (ptr == NULL) return;
@@ -290,12 +290,12 @@ void WIN_DrawWindow(Image im, Window w)
 	if (WIN_wmpaint) hdc = BeginPaint((HWND)w->ptr, &p);
 	else hdc = GetDC((HWND)w->ptr);
 
-	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, im->width, im->height);
+	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, max.x - min.x, max.y - min.y);
 	if (ptr == NULL) return;
 
 	u_int add = 0;
-	for (long y = 0; y < (long)im->height; y++)
-		for (long x = 0; x < (long)im->width; x++, add += 4)
+	for (long y = min.y; y < (long)max.y; y++)
+		for (long x = min.x; x < (long)max.x; x++, add += 4)
 		{
 			*(ptr + add) = *(im->image + add + 3);
 			*(ptr + add + 1) = *(im->image + add + 2);
@@ -303,12 +303,12 @@ void WIN_DrawWindow(Image im, Window w)
 			*(ptr + add + 3) = *(im->image + add);
 		}
 
-	SetBitmapBits(hBitmap, im->width * im->height * 4, ptr);
+	SetBitmapBits(hBitmap, (max.x - min.x) * (max.y - min.y) * 4, ptr);
 
 	HDC hdcMem = CreateCompatibleDC(hdc);
 	HGDIOBJ oldBitmap = SelectObject(hdcMem, hBitmap);
 
-	BitBlt(hdc, 0, 0, im->width, im->height, hdcMem, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, (max.x - min.x), (max.y - min.y), hdcMem, 0, 0, SRCCOPY);
 	SelectObject(hdcMem, oldBitmap);
 
 	DeleteObject(oldBitmap);

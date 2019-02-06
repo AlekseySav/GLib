@@ -27,7 +27,7 @@ EXTERN void WIN_Fullscreen(Window w);
 EXTERN void WIN_ChangeWindowPos(Window w);
 EXTERN void WIN_ChangeWindowTitle(Window w);
 EXTERN void WIN_ChangeWindowFlags(Window w);
-EXTERN void WIN_DrawWindow(Image im, Window w);
+EXTERN void WIN_DrawWindow(Image im, Window w, Point min, Point max);
 
 EXTERN Window WIN_GetWindow(void * hwnd);
 

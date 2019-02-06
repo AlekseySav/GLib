@@ -112,22 +112,33 @@ bool glibRunWindowEvent(Window w, EventArgs * args)
 	return glibRunEvent(&w->handles, args);
 }
 
-bool glibDrawImageNoRelease(Image im, Window w)
+bool glibDrawImageNoReleasePart(Image im, Window w, Point min, Point max)
 {
 	if (!(w->flags & SYS_REDRAW)) return false;
 	if (!glibCheckWindow(w)) return false;
 	if (im == NULL) return false;
 
-	EX_DrawWindow(im, w);
+	EX_DrawWindow(im, w, min, max);
 	glibRemoveWindowFlag(SYS_REDRAW, w);
 
 	return true;
 }
-bool glibDrawImage(Image im, Window w)
+
+bool glibDrawImagePart(Image im, Window w, Point min, Point max)
 {
-	bool res = glibDrawImageNoRelease(im, w);
+	bool res = glibDrawImageNoReleasePart(im, w, min, max);
 	glibReleaseImage(im);
 	return res;
+}
+
+bool glibDrawImageNoRelease(Image im, Window w)
+{
+	return glibDrawImageNoReleasePart(im, w, (Point) { 0, 0 }, (Point) { im->width, im->height});
+}
+
+bool glibDrawImage(Image im, Window w)
+{
+	return glibDrawImagePart(im, w, (Point) { 0, 0 }, (Point) { im->width, im->height });
 }
 
 void glibStartWindowDraw(Window w)

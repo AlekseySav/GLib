@@ -41,7 +41,7 @@ EXTERN void glibDrawStrength(Image im, Point left_upstairs, u_int sizex, u_int s
 EXTERN void glibDrawLine(Image im, struct Line line, ARGB color, long wide);
 
 EXTERN void glibDrawRectangle(Image im, struct Rect rect, ARGB fill, ARGB border, long wide);
-EXTERN void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color, ARGB border, long wide); //border doesnt work
+EXTERN void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color); //border doesnt work
 EXTERN void glibDrawEllipse(Image im, struct Ellipse ellipse, ARGB fill, ARGB border, long wide);
 
 EXTERN Image glibCreateImage(u_int width, u_int height);

@@ -56,6 +56,16 @@
 	#ifndef CIRCLE
 		#define CIRCLE(center, radius) ELLIPSE(center, radius, radius)
 	#endif
+
+	#define COLOR_BLACK COLOR(255, 0, 0, 0)
+	#define COLOR_WHITE COLOR(255, 255, 255, 255)
+	#define COLOR_RED COLOR(255, 255, 0, 0)
+	#define COLOR_GREEN COLOR(255, 0, 255, 0)
+	#define COLOR_BLUE COLOR(255, 0, 0, 255)
+	#define COLOR_PURPLE COLOR(255, 150, 0, 150)
+	#define COLOR_YELLOW COLOR(255, 255, 255, 0)
+	#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
+
 #endif
 
 #ifndef TEXT
@@ -73,15 +83,6 @@
 		#define WINDOW_HANDLE(handle) ((struct Window__ *)((Handle)(handle)))
 	#endif
 #endif
-
-#define COLOR_BLACK COLOR(255, 0, 0, 0)
-#define COLOR_WHITE COLOR(255, 255, 255, 255)
-#define COLOR_RED COLOR(255, 255, 0, 0)
-#define COLOR_GREEN COLOR(255, 0, 255, 0)
-#define COLOR_BLUE COLOR(255, 0, 0, 255)
-#define COLOR_PURPLE COLOR(255, 150, 0, 150)
-#define COLOR_YELLOW COLOR(255, 255, 255, 0)
-#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
 
 #ifndef FLAG_INCLUDES
 	#define FLAG_INCLUDES(flag, value) ((bool)((u_int32)(flag & value)))

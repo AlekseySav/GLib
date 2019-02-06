@@ -76,7 +76,9 @@ EXTERN bool glibCheckWindowEvent(Window w, u_int type);
 EXTERN void glibSetWindowEvent(Window w, EventHandle handle, u_int etypes);
 EXTERN bool glibRunWindowEvent(Window w, EventArgs * args);
 
-EXTERN bool glibDrawImage(Image im, Window w);
+EXTERN bool glibDrawImageNoReleasePart(Image im, Window w, Point min, Point max);
+EXTERN bool glibDrawImagePart(Image im, Window w, Point min, Point max);
 EXTERN bool glibDrawImageNoRelease(Image im, Window w);
+EXTERN bool glibDrawImage(Image im, Window w);
 
 EXTERN void glibStartWindowDraw(Window w);
