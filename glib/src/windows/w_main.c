@@ -331,14 +331,16 @@ int WIN_MainLoop()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
-		EventArgs args;
-		args.msg = EVENT_BASIC;
-		Window w = glib_window_last;
-		while (w != NULL) 
+		else
 		{
-			if(glibCheckWindowEvent(w, EVENT_BASIC)) glibRunWindowEvent(w, &args);
-			w = (Window)w->prev;
+			EventArgs args;
+			args.msg = EVENT_BASIC;
+			Window w = glib_window_last;
+			while (w != NULL)
+			{
+				if (glibCheckWindowEvent(w, EVENT_BASIC)) glibRunWindowEvent(w, &args);
+				w = (Window)w->prev;
+			}
 		}
 	}
 

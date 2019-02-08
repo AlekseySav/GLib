@@ -4,83 +4,160 @@
 Image im;
 Window w;
 
-//Tictactoe
+#define abs(a) (((a) >= (0)) ? (a) : (-a))
 
-u_int player = 0;
-char field[3][3];
+#define SPEED 500000
 
-void start()
+#define CELL_SIZE 50
+#define WIDTH 10
+#define HEIGHT 10
+
+enum cell {
+	NONE = 0,
+	SNAKE = 1,
+	FOOD = 2
+};
+
+struct SnakeCell {
+	Point cell;
+	void * next;
+};
+
+SnakeCell * tail;
+int direction = KEY_RIGHT_ARROW;
+Point food;
+
+bool findsnake(Point p)
 {
-	for (int y = 0; y < 3; y++)
-		for (int x = 0; x < 3; x++)
-			field[x][y] = ' ';
-	im = glibCreateImage(300, 300);
+	SnakeCell * s = tail;
+
+	while (s->next != NULL)
+		if (s->cell.x == p.x && s->cell.y == p.y) return true;
+		else s = (SnakeCell *)s->next;
+	return false;
 }
-
-void drawcross(Point p)
+void drawcell(Point p, cell c)
 {
-	Point pmin = POINT(p.x * 100 + 15, p.y * 100 + 15);
-	Point pmax = POINT(p.x * 100 + 85, p.y * 100 + 85);
-
-	glibDrawLine(im, LINE(pmin, pmax), COLOR_WHITE, 2L);
-	glibDrawLine(im, LINE(POINT(pmax.x, pmin.y), POINT(pmin.x, pmax.y)), COLOR_WHITE, 2L);
-
-	glibStartWindowDraw(w);
-	glibDrawImageNoRelease(im, w);
-}
-void drawcircle(Point p)
-{
-	Point center = POINT(p.x * 100 + 50, p.y * 100 + 50);
-	glibDrawEllipse(im, CIRCLE(center, 40), COLOR_TRANSPARENT, COLOR_WHITE, 2L);
-
-	glibStartWindowDraw(w);
-	glibDrawImageNoRelease(im, w);
-}
-void drawfield()
-{
-	glibFillImage(im, COLOR_BLUE);
-
-	glibDrawLine(im, LINE(POINT(100, 0), POINT(100, 300)), COLOR_WHITE, 2L);
-	glibDrawLine(im, LINE(POINT(200, 0), POINT(200, 300)), COLOR_WHITE, 2L);
-
-	glibDrawLine(im, LINE(POINT(0, 100), POINT(300, 100)), COLOR_WHITE, 2L);
-	glibDrawLine(im, LINE(POINT(0, 200), POINT(300, 200)), COLOR_WHITE, 2L);
-
-	glibStartWindowDraw(w);
-	glibDrawImageNoRelease(im, w);
-}
-
-void game(EventArgs * args)
-{
-	if (args->msg == EVENT_DRAW) glibDrawImageNoRelease(im, w);
+	if (c == NONE)
+		glibDrawRectangle(im, RECT(POINT(p.x * CELL_SIZE, p.y * CELL_SIZE), POINT((p.x + 1) * CELL_SIZE, (p.y + 1) * CELL_SIZE)), COLOR_BLUE, COLOR_WHITE, 1L);
+	else if(c == FOOD)
+		glibDrawRectangle(im, RECT(POINT(p.x * CELL_SIZE, p.y * CELL_SIZE), POINT((p.x + 1) * CELL_SIZE, (p.y + 1) * CELL_SIZE)), COLOR_YELLOW, COLOR_WHITE, 1L);
 	else
+	glibDrawRectangle(im, RECT(POINT(p.x * CELL_SIZE, p.y * CELL_SIZE), POINT((p.x + 1) * CELL_SIZE, (p.y + 1) * CELL_SIZE)), COLOR_PURPLE, COLOR_TRANSPARENT, 0L);
+}
+void addfood()
+{
+	int pos = rand() % (WIDTH & HEIGHT);
+	Point p = POINT(pos / WIDTH, pos % WIDTH);
+
+		food = p;
+		drawcell(p, FOOD);
+}
+
+void show(EventArgs * args)
+{
+	im = glibCreateImage(w->width, w->height);
+	glibFillImage(im, COLOR_WHITE);
+	
+	for (int y = 0; y < HEIGHT; y++)
+		for (int x = 0; x < WIDTH; x++)
+			drawcell(POINT(x, y), NONE);
+	tail = (SnakeCell *)malloc(3 * sizeof(SnakeCell));
+	tail[0].cell = POINT(0, 9); tail[0].next = &tail[1];
+	tail[1].cell = POINT(1, 9); tail[1].next = &tail[2];
+	tail[2].cell = POINT(2, 9); tail[2].next = NULL;
+
+	drawcell(tail[0].cell, SNAKE);
+	drawcell(tail[1].cell, SNAKE);
+	drawcell(tail[2].cell, SNAKE);
+
+	addfood();
+}
+void update(EventArgs * args)
+{
+	if (args->msg == EVENT_DRAW)
 	{
-		Point p = POINT(Mouse.x / 100, Mouse.y / 100);
-		if (field[p.x][p.y] == ' ') {
-			if (player % 2 == 0) {
-				drawcross(p);
-				field[p.x][p.y] = 'x';
-			}
-			else {
-				drawcircle(p);
-				field[p.x][p.y] = 'o';
-			}
-			player++;
+		glibDrawImageNoRelease(im, w);
+	}
+
+	static int time = 0;
+	if (time == SPEED || args->msg == EVENT_KEYDOWN)
+	{
+		if (direction == KEY_SPACE) return;
+
+		time = 0;
+		SnakeCell pcell = *tail;
+
+		SnakeCell * ptr = tail;
+		drawcell(tail->cell, NONE);
+		
+		while (ptr->next != NULL)
+		{
+			ptr->cell = ((SnakeCell *)ptr->next)->cell;
+			ptr = ((SnakeCell *)ptr->next);
 		}
+
+		switch (direction)
+		{
+		case KEY_UP_ARROW:
+			ptr->cell.y--;
+			if (ptr->cell.y < 0) ptr->cell.y = HEIGHT - 1;
+			break;
+		case KEY_DOWN_ARROW:
+			ptr->cell.y++;
+			if (ptr->cell.y >= HEIGHT) ptr->cell.y = 0;
+			break;
+		case KEY_LEFT_ARROW:
+			ptr->cell.x--;
+			if (ptr->cell.x < 0) ptr->cell.x = WIDTH - 1;
+			break;
+		case KEY_RIGHT_ARROW:
+			ptr->cell.x++;
+			if (ptr->cell.x >= WIDTH) ptr->cell.x = 0;
+			break;
+		}
+
+		drawcell(ptr->cell, SNAKE);
+
+		if (food.x == ptr->cell.x && food.y == ptr->cell.y)
+		{
+			ptr = (SnakeCell *)malloc(sizeof(SnakeCell));
+			ptr->next = tail;
+			ptr->cell = pcell.cell;
+			tail = ptr;
+			addfood();
+		}
+		
+		glibStartWindowDraw(w);
+		glibDrawImageNoRelease(im, w);
+	}
+	else time++;
+}
+void key(EventArgs * args)
+{
+	if (args->flag1 < KEY_LEFT_ARROW || args->flag1 > KEY_DOWN_ARROW && args->flag1 != KEY_SPACE) return;
+
+	if (direction != args->flag1) 
+	{
+		if (abs((int32)(args->flag1 - direction)) == 2) return;
+		direction = args->flag1;
+		if (direction != KEY_SPACE)
+			update(args);
 	}
 }
 
 int gmain(char * argv[], int argc)
 {
-	w = glibCreateWindow(TEXT("tictactoe"), 100, 100, 300, 300, STYLE_NORMAL ^ STYLE_RESIZABLE, NULL);
+	w = glibCreateWindow(TEXT("Snake"), 100, 100, CELL_SIZE * WIDTH + 1, CELL_SIZE * HEIGHT + 1, STYLE_NORMAL ^ STYLE_RESIZABLE, NULL);
+
+	glibSetWindowEvent(w, show, EVENT_SHOWN);
+	glibSetWindowEvent(w, update, EVENT_DRAW | EVENT_BASIC);
+	glibSetWindowEvent(w, key, EVENT_KEYDOWN);
+
 	glibShowWindow(w);
-	glibSetWindowEvent(w, game, EVENT_CLICK | EVENT_DRAW);
-
-	start();
-	drawfield();
-	glibDrawTriangle(im, TRIANGLE(POINT(0, 0), POINT(100, 100), POINT(200, 100)), COLOR(200, 255, 0, 0));
-
+	
 	int res = glibLoop();
 	glibReleaseImage(im);
+	free(tail);
 	return res;
 }

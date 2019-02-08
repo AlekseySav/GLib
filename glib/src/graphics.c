@@ -13,8 +13,8 @@ Image glibCreateImage(u_int width, u_int height)
 
 void glibFillImage(Image im, ARGB fill)
 {
-	for (u_int y = 0; y < im->height; y++)
-		for (u_int x = 0; x < im->width; x++)
+	for (int y = 0; y < im->height; y++)
+		for (int x = 0; x < im->width; x++)
 			*((ARGB *)im->image + im->width * y + x) = fill;
 }
 
@@ -85,8 +85,8 @@ void glibDrawRectangle(Image im, struct Rect rect, ARGB fill, ARGB border, long 
 	if (p1.x > p2.x) MOVE_VARIBLES(p1.x, p2.x);
 	if (p1.y > p2.y) MOVE_VARIBLES(p1.y, p2.y);
 
-	for (u_int y = p1.y; y < p2.y; y++)
-		for (u_int x = p1.x; x < p2.x; x++)
+	for (int y = p1.y; y < p2.y; y++)
+		for (int x = p1.x; x < p2.x; x++)
 		{
 			if(y <= wide + p1.y || y >= p2.y - wide || x <= wide + p1.x || x >= p2.x - wide)
 				glibDrawPoint(im, (Point) { x, y }, border);
@@ -110,8 +110,8 @@ void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color)
 	Point min = { glib_min3(p1.x, p2.x, p3.x), glib_min3(p1.y, p2.y, p3.y) };
 	Point max = { glib_max3(p1.x, p2.x, p3.x), glib_max3(p1.y, p2.y, p3.y) };
 
-	for (u_int x = min.x; x < max.x; x++)
-		for (u_int y = min.y; y < max.y; y++)
+	for (int x = min.x; x < max.x; x++)
+		for (int y = min.y; y < max.y; y++)
 		{
 			long a = (long)(p1.x - x) * b1 + (long)(p1.y - y) * a1;
 			long b = (long)(p2.x - x) * b2 + (long)(p2.y - y) * a2;

@@ -2,7 +2,7 @@
 
 typedef struct Point__
 {
-	u_int x, y;
+	int32 x, y;
 } Point;
 
 typedef struct ARGB__
@@ -13,8 +13,8 @@ typedef struct ARGB__
 typedef struct Image__
 {
 	byte * image;
-	u_int width;
-	u_int height;
+	int32 width;
+	int32 height;
 
 } * Image;
 
