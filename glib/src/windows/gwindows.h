@@ -11,10 +11,6 @@ char * WIN_cname;
 EXTERN HINSTANCE WIN_hinstance;
 EXTERN bool WIN_wmpaint;
 
-#ifdef UNICODE
-EXTERN int WIN_Ascii_to_UNICODE(const char * ibuf, LPWSTR obuf);
-#endif
-
 EXTERN int WIN_Initialize();
 EXTERN int WIN_RegisterClass();
 

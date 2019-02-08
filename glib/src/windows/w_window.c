@@ -36,7 +36,7 @@ int WIN_CreateWindow(Window w)
 
 #ifdef UNICODE
 	WCHAR str[MAX_TITLE_LENGTH];
-	WIN_Ascii_to_UNICODE((const char *)w->title, (LPWSTR)&str);
+	glibConvertString(w->title, &str[0]);
 #else
 	char * str = w->title;
 #endif
@@ -109,7 +109,7 @@ void WIN_ChangeWindowTitle(Window w)
 {
 #ifdef UNICODE
 	WCHAR str[MAX_TITLE_LENGTH];
-	WIN_Ascii_to_UNICODE((const char *)w->title, (LPWSTR)&str);
+	glibConvertString(w->title, &str[0]);
 #else
 	char * str = w->title;
 #endif

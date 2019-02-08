@@ -10,11 +10,6 @@ char * WIN_cname = "GLIB_WNDCLASS";
 HINSTANCE WIN_hinstance;
 bool WIN_wmpaint = false;
 
-int WIN_Ascii_to_UNICODE(const char * ibuf, LPWSTR obuf)
-{
-	return MultiByteToWideChar(CP_OEMCP, 0, ibuf, -1, obuf, strlen(ibuf) + 1);
-}
-
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hprev, LPSTR str, int cmd)
 {
 	WIN_hinstance = hInst;
@@ -55,6 +50,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hprev, LPSTR str, int cmd)
 
 int WIN_Initialize()
 {
+	glibSetDefaultLanguage();
 	return WIN_RegisterClass();
 }
 

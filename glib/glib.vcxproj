@@ -23,6 +23,7 @@
     <ClInclude Include="include\glib\std.h" />
     <ClInclude Include="include\glib\sys\event.h" />
     <ClInclude Include="include\glib\sys\graphics.h" />
+    <ClInclude Include="include\glib\sys\text.h" />
     <ClInclude Include="include\glib\sys\window.h" />
     <ClInclude Include="src\glib_src.h" />
     <ClInclude Include="src\windows\gwindows.h" />
@@ -32,6 +33,7 @@
     <ClCompile Include="src\event.c" />
     <ClCompile Include="src\glib.c" />
     <ClCompile Include="src\graphics.c" />
+    <ClCompile Include="src\text.c" />
     <ClCompile Include="src\window.c" />
     <ClCompile Include="src\windows\w_main.c" />
     <ClCompile Include="src\windows\w_window.c" />

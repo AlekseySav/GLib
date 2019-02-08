@@ -7,7 +7,7 @@
 #undef _USES_LINUX_DRIVER
 #undef _USES_DEFAULT_DRIVER
 
-#if defined(WIN32) || defined(__WIN32__)
+#if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
 	#define _USES_WINDOWS_DRIVER
 #elif defined(__LINUX__)
 	#define _USES_LINUX_DRIVER
@@ -100,7 +100,7 @@ typedef void * Handle;
 
 #include "sys/event.h"
 #include "sys/graphics.h"
+#include "sys/text.h"
 #include "sys/window.h"
-#include "sys/elements.h"
 
 #endif
