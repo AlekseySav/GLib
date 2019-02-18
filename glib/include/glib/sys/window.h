@@ -1,4 +1,5 @@
-#pragma once
+#if !defined(_GLIB_SYS_WINDOW_) && defined(_GLIB)
+#define _GLIB_SYS_WINDOW_
 
 #define EX_CreateWindow _FUNCTION_HANDLE(CreateWindow)
 #define EX_ShowWindow _FUNCTION_HANDLE(ShowWindow)
@@ -10,7 +11,7 @@
 #define EX_DrawWindow _FUNCTION_HANDLE(DrawWindow)
 
 #ifndef MAX_TITLE_LENGTH
-	#define MAX_TITLE_LENGTH 100
+#define MAX_TITLE_LENGTH 100
 #endif
 
 typedef struct Window__ {
@@ -19,15 +20,15 @@ typedef struct Window__ {
 	const void * parent;
 
 	char * title;
-	u_int x, y;
-	u_int width, height;
+	int32 x, y;
+	int32 width, height;
 
 	u_int32 flags;
 
-	const void * prev, * next;
+	const void * prev, *next;
 
 	EventHandles handles;
-} * Window;
+} *Window;
 
 EXTERN bool glibCheckWindow(Window w);
 
@@ -76,9 +77,9 @@ EXTERN bool glibCheckWindowEvent(Window w, u_int type);
 EXTERN void glibSetWindowEvent(Window w, EventHandle handle, u_int etypes);
 EXTERN bool glibRunWindowEvent(Window w, EventArgs * args);
 
-EXTERN bool glibDrawImageNoReleasePart(Image im, Window w, Point min, Point max);
-EXTERN bool glibDrawImagePart(Image im, Window w, Point min, Point max);
-EXTERN bool glibDrawImageNoRelease(Image im, Window w);
-EXTERN bool glibDrawImage(Image im, Window w);
+EXTERN bool glibDrawImage(Image im, Window w, Point min, Point max, bool release = false);
+EXTERN bool glibDrawImage(Image im, Window w, bool release = false);
 
 EXTERN void glibStartWindowDraw(Window w);
+
+#endif

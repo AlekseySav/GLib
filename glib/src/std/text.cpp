@@ -1,4 +1,4 @@
-#include "glib_src.h"
+#include "src/glib_src.h"
 
 u_int32 glib_language = LANGUAGE_DEFAULT;
 
@@ -9,14 +9,12 @@ void glibSetLanguage(u_int32 lang)
 
 void glibDrawText(Image im, int32 x, int32 y, char * str, u_int32 format)
 {
-
+	//============================================================
 }
 
 w_char glibConvertCharacter(char c)
 {
-	if (c >= 0 && c <= 128) return (w_char)(c);
-
-	if(glib_language & LANGUAGE_ENGLISH)
+	if (glib_language & LANGUAGE_ENGLISH)
 		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z')
 			return (w_char)(c);
 

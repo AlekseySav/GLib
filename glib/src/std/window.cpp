@@ -1,4 +1,4 @@
-#include "glib_src.h"
+#include "src/glib_src.h"
 
 u_int glib_windows_count = 0;
 Window__ * glib_window_last = NULL;
@@ -44,9 +44,9 @@ Window glibCreateWindow(char * title, u_int x, u_int y, u_int width, u_int heigh
 	w->parent = parent;
 	glibSetWindowEvent(w, NULL, EVENT_ALL);
 
-	if(!glibCorrectWindowsFlag(flags))
+	if (!glibCorrectWindowsFlag(flags))
 		glibAddWindowFlag(SYS_FAILED, w);
-	else if FAILED(EX_CreateWindow(w))
+	else if (EX_CreateWindow(w) < 0)
 		glibAddWindowFlag(SYS_FAILED, w);
 	else
 	{
@@ -65,7 +65,7 @@ Window glibCreateWindow(char * title, u_int x, u_int y, u_int width, u_int heigh
 
 int glibShowWindow(Window w)
 {
-	if(!glibCheckWindow(w)) return -3;
+	if (!glibCheckWindow(w)) return -3;
 	if (w->flags & SYS_SHOWN) return -2;
 	glibAddWindowFlag(SYS_SHOWN, w);
 	return EX_ShowWindow(w);
@@ -112,7 +112,7 @@ bool glibRunWindowEvent(Window w, EventArgs * args)
 	return glibRunEvent(&w->handles, args);
 }
 
-bool glibDrawImageNoReleasePart(Image im, Window w, Point min, Point max)
+bool glibDrawImage(Image im, Window w, Point min, Point max, bool release)
 {
 	if (!(w->flags & SYS_REDRAW)) return false;
 	if (!glibCheckWindow(w)) return false;
@@ -121,24 +121,13 @@ bool glibDrawImageNoReleasePart(Image im, Window w, Point min, Point max)
 	EX_DrawWindow(im, w, min, max);
 	glibRemoveWindowFlag(SYS_REDRAW, w);
 
+	if(release) im->Release();
 	return true;
 }
 
-bool glibDrawImagePart(Image im, Window w, Point min, Point max)
+bool glibDrawImage(Image im, Window w, bool release)
 {
-	bool res = glibDrawImageNoReleasePart(im, w, min, max);
-	glibReleaseImage(im);
-	return res;
-}
-
-bool glibDrawImageNoRelease(Image im, Window w)
-{
-	return glibDrawImageNoReleasePart(im, w, (Point) { 0, 0 }, (Point) { im->width, im->height});
-}
-
-bool glibDrawImage(Image im, Window w)
-{
-	return glibDrawImagePart(im, w, (Point) { 0, 0 }, (Point) { im->width, im->height });
+	return glibDrawImage(im, w, Point { 0, 0 }, Point { im->width, im->height }, release);
 }
 
 void glibStartWindowDraw(Window w)

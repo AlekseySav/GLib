@@ -18,33 +18,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\glib\glib.h" />
-    <ClInclude Include="include\glib\std.h" />
-    <ClInclude Include="include\glib\sys\event.h" />
-    <ClInclude Include="include\glib\sys\graphics.h" />
-    <ClInclude Include="include\glib\sys\text.h" />
-    <ClInclude Include="include\glib\sys\window.h" />
-    <ClInclude Include="src\glib_src.h" />
-    <ClInclude Include="src\windows\gwindows.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\event.c" />
-    <ClCompile Include="src\glib.c" />
-    <ClCompile Include="src\graphics.c" />
-    <ClCompile Include="src\text.c" />
-    <ClCompile Include="src\window.c" />
-    <ClCompile Include="src\windows\w_main.c" />
-    <ClCompile Include="src\windows\w_window.c" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{0CE8C071-E2E9-4085-BBAF-1CE547C23CE9}</ProjectGuid>
+    <ProjectGuid>{0D67C602-8BE4-4636-9976-24A062FFD211}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>graphics</RootNamespace>
+    <RootNamespace>glib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>glib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -110,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -124,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -140,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -158,7 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -167,6 +146,28 @@
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\std\bitmap.cpp" />
+    <ClCompile Include="src\std\event.cpp" />
+    <ClCompile Include="src\std\glib.cpp" />
+    <ClCompile Include="src\std\graphics.cpp" />
+    <ClCompile Include="src\std\text.cpp" />
+    <ClCompile Include="src\std\window.cpp" />
+    <ClCompile Include="src\windows\winwindow.cpp" />
+    <ClCompile Include="src\windows\winmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\glib\glib.h" />
+    <ClInclude Include="include\glib\std.h" />
+    <ClInclude Include="include\glib\sys\bitmap.h" />
+    <ClInclude Include="include\glib\sys\event.h" />
+    <ClInclude Include="include\glib\sys\graphics.h" />
+    <ClInclude Include="include\glib\sys\text.h" />
+    <ClInclude Include="include\glib\sys\window.h" />
+    <ClInclude Include="src\glib_src.h" />
+    <ClInclude Include="src\windows\windows.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

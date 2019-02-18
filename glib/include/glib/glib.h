@@ -1,29 +1,45 @@
-#pragma once
-
 #ifndef _GLIB
 #define _GLIB 3
 
-#undef _USES_WINDOWS_DRIVER
-#undef _USES_LINUX_DRIVER
-#undef _USES_DEFAULT_DRIVER
+#undef _NULL_DRIVER
+#undef _WINDOWS_DRIVER
+#undef _LINUX_DRIVER
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
-	#define _USES_WINDOWS_DRIVER
+#define _NULL_DRIVER 0
+#define _WINDOWS_DRIVER 1
+#define _LINUX_DRIVER 2
+
+#undef _SYSTEM_32
+#undef _SYSTEM_64
+
+#undef _USER_DRIVER
+
+#if defined(_WIN64)
+	#define _USER_DRIVER _WINDOWS_DRIVER
+	#define _SYSTEM_64
+#elif defined(_WIN32)
+	#define _USER_DRIVER _WINDOWS_DRIVER
+	#define _SYSTEM_32
 #elif defined(__LINUX__)
-	#define _USES_LINUX_DRIVER
+	#define _USER_DRIVER _LINUX_DRIVER
+
+	#if defined(__LP64__) || defined(_M_IA64)
+		#define _SYSTEM_64
+	#else
+		#define _SYSTEM_32
+	#endif
 #else
-	#define _USES_DEFAULT_DRIVER
+	#define _USER_DRIVER _NULL_DRIVER
 #endif
 
+#if _USER_DRIVER != _NULL_DRIVER
+#if defined(__cplusplus)
+
 #ifndef NULL
-	#ifdef __cplusplus
-		#if __cplusplus < 11
-			#define NULL 0
-		#else
-			#define NULL nullptr
-		#endif
+	#if __cplusplus < 11
+		#define NULL 0
 	#else
-		#define NULL (void *)0
+		#define NULL nullptr
 	#endif
 #endif
 
@@ -31,76 +47,79 @@
 	#ifndef _CRT_SECURE_NO_WARNINGS
 		#define _CRT_SECURE_NO_WARNINGS
 	#endif
-	#include <stdio.h>
+		#include <stdio.h>
 #endif
 
 #ifndef _INC_STDLIB
 	#include <stdlib.h>
 #endif
 
-#undef EXTERN_C
-
-#ifdef __cplusplus
-	#define EXTERN_C extern "C"
-#else
-	#define EXTERN_C extern
+#ifndef LINK_C
+	#define LINK_C extern
 #endif
 
 #ifndef EXTERN
-	#define EXTERN EXTERN_C
+	#define EXTERN extern "C++"
 #endif
 
-#ifdef _USES_WINDOWS_DRIVER
-typedef __int8 int8;
-typedef __int16 int16;
-typedef __int32 int32;
-typedef unsigned __int8 u_int8;
-typedef unsigned __int16 u_int16;
-typedef unsigned __int32 u_int32;
-#else
-typedef int8_t int8;
-typedef int16_t int16;
-typedef int32_t int32;
-typedef unsigned int8_t u_int8;
-typedef unsigned int16_t u_int16;
-typedef unsigned int32_t u_int32;
+#ifdef _SYSTEM_32
+	typedef unsigned int u_int32;
+	typedef signed int int32;
+	typedef unsigned long int dword;
+#elif defined(_SYSTEM_64)
+	#if _USER_DRIVER == _WINDOWS_DRIVER
+		typedef unsigned __int32 u_int32;
+		typedef signed __int32 int32;
+	#elif _USER_DRIVER == _LINUX_DRIVER
+		typedef unsigned int u_int32;
+		typedef signed int int32;
+	#endif
+	typedef unsigned int dword;
 #endif
 
 typedef unsigned int u_int;
+typedef unsigned short u_int16;
+typedef signed short int16;
 
-typedef u_int8 byte;
-typedef u_int16 word;
-typedef u_int32 dword;
+typedef unsigned char byte;
+typedef unsigned short int word;
 
-#if !defined(__cplusplus) || __cplusplus < 11
-#undef bool
-#undef true
-#undef false
+#if __cplusplus < 11
+	#undef bool
+	#undef true
+	#undef false
 
-typedef int bool;
-#define true 1
-#define false 0
+	typedef int bool;
+	#define true 1
+	#define false 0
 #endif
 
-#ifdef _USES_WINDOWS_DRIVER
+#if _USER_DRIVER == _WINDOWS_DRIVER
 	#define _FUNCTION_HANDLE(__name__) WIN_##__name__
-#elif defined(_USES_LINUX_DRIVER)
+#elif _USER_DRIVER == _LINUX_DRIVER
 	#define _FUNCTION_HANDLE(__name__) LINUX_##__name__
-#elif defined(_USES_DEFAULT_DRIVER)
-	#define _FUNCTION_HANDLE(__name__) DEF_##__name__
 #endif
 
 #define EX_MainLoop  _FUNCTION_HANDLE(MainLoop)
+#define EX_CreateConsole _FUNCTION_HANDLE(CreateConsole)
 
 EXTERN int glibLoop();
+EXTERN int glibCreateConsole();
 
-EXTERN_C int gmain(char * argv[], int argc);
+LINK_C int gmain(char * argv[], int argc); //main function
 
 typedef void * Handle;
 
 #include "sys/event.h"
+#include "sys/bitmap.h"
 #include "sys/graphics.h"
 #include "sys/text.h"
 #include "sys/window.h"
 
+#endif
+#else
+#undef _GLIB
+#endif
+#else
+#undef _GLIB
 #endif

@@ -1,4 +1,4 @@
-#include "glib_src.h"
+#include "src/glib_src.h"
 
 void glibSetEvent(EventHandles * events, EventHandle handle, u_int type)
 {
@@ -38,10 +38,10 @@ bool glibRunEvent(EventHandles * events, EventArgs * args)
 		else return false;
 		break;
 	case EVENT_SHOWN:
-			if (events->shown != NULL)
-				events->shown(args);
-			else return false;
-			break;
+		if (events->shown != NULL)
+			events->shown(args);
+		else return false;
+		break;
 	case EVENT_CLOSING:
 		if (events->closing != NULL)
 			events->closing(args);

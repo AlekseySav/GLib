@@ -1,6 +1,11 @@
-#include "glib_src.h"
+#include "src/glib_src.h"
 
 Point Mouse;
+
+int glibCreateConsole()
+{
+	return EX_CreateConsole();
+}
 
 int glibLoop()
 {
@@ -29,10 +34,4 @@ u_int glib_max3(u_int x, u_int y, u_int z)
 	else
 		if (y > z) return y;
 	return z;
-}
-
-long glib_abs(long x)
-{
-	if (x >= 0) return x;
-	return -x;
 }

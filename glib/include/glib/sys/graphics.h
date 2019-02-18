@@ -1,4 +1,5 @@
-#pragma once
+#if !defined(_GLIB_SYS_GRAPHICS_) && defined(_GLIB)
+#define _GLIB_SYS_GRAPHICS_
 
 typedef struct Point__
 {
@@ -10,14 +11,6 @@ typedef struct ARGB__
 	byte a, r, g, b;
 } ARGB;
 
-typedef struct Image__
-{
-	byte * image;
-	int32 width;
-	int32 height;
-
-} * Image;
-
 struct Line {
 	Point point1, point2;
 };
@@ -26,28 +19,39 @@ struct Rect {
 	Point point1, point2;
 };
 
-struct Triangle {
-	Point point1, point2, point3;
-};
-
 struct Ellipse {
 	Point center;
 	u_int radius_x, radius_y;
 };
 
-EXTERN void glibDrawPoint(Image im, Point p, ARGB fill);
-EXTERN void glibDrawStrength(Image im, Point left_upstairs, u_int sizex, u_int sizey, ARGB color, bool fillax, bool fillbx, bool fillay, bool fillby, bool fillov);
+typedef struct Image__
+{
+	byte * image;
+	int32 width;
+	int32 height;
 
-EXTERN void glibDrawLine(Image im, struct Line line, ARGB color, long wide);
+	void Release();
 
-EXTERN void glibDrawRectangle(Image im, struct Rect rect, ARGB fill, ARGB border, long wide);
-EXTERN void glibDrawTriangle(Image im, struct Triangle triangle, ARGB color); //border doesnt work
-EXTERN void glibDrawEllipse(Image im, struct Ellipse ellipse, ARGB fill, ARGB border, long wide);
+	ARGB * GetPixel(Point pos);
+	void DrawPoint(Point point, ARGB color);
+	
+	void DrawImage(struct Image__ * image, Point start, Point end);
+
+	void DrawLine(Line line, ARGB color, long wide = 1L);
+	
+	void DrawRect(Rect rect, ARGB color, long wide = 1L);
+	void DrawEllipse(struct Ellipse ellipse, ARGB color, long wide = 1L);
+
+	void FillRect(Rect rect, ARGB color);
+	void FillEllipse(struct Ellipse ellipse, ARGB color);
+} * Image;
 
 EXTERN Image glibCreateImage(u_int width, u_int height);
-EXTERN void glibReleaseImage(Image im);
-EXTERN void glibFillImage(Image im, ARGB fill);
+EXTERN Image glibCreateImage(u_int width, u_int height, byte * ptr);
+EXTERN Image glibCreateImage(Bitmap bitmap);
 
-#define MOVE_VARIBLES(x, y) do { x += y; y = x - y; x -= y; } while(0)
+EXTERN void glibFillImage(Image im, ARGB color);
 
-EXTERN ARGB glibPixel(ARGB clr, ARGB add);
+EXTERN ARGB glibMerge(ARGB clr, ARGB add);
+
+#endif

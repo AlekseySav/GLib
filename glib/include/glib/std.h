@@ -1,70 +1,42 @@
 #pragma once
 
-#ifdef _GLIB
+#if defined(_GLIB) && !defined(_GLIB_STD)
+#define _GLIB_STD
 
-#ifndef __GLIB_SRC
-	#ifndef __cplusplus
-		#ifndef POINT
-			#define POINT(x, y) ((Point) { x, y })
-		#endif
+#if !defined(__GLIB_SRC)
 
-		#ifndef COLOR
-			#define COLOR(a, r, g, b) ((ARGB) { a, r, g, b })
-		#endif
+#ifndef POINT
+	#define POINT(x, y) (Point { x, y })
+#endif
 
-		#ifndef LINE
-			#define LINE(point1, point2) ((Line) { point1, point2 })
-		#endif
+#ifndef COLOR
+	#define COLOR(r, g, b, a) (ARGB { a, r, g, b })
+#endif
 
-		#ifndef RECT
-			#define RECT(point1, point2) ((Rect) { point1, point2 })
-		#endif
+#ifndef LINE
+	#define LINE(point1, point2) (Line { point1, point2 })
+#endif
 
-		#ifndef TRIANGLE
-			#define TRIANGLE(point1, point2, point3)  ((Triangle) { point1, point2, point3 })
-		#endif
+#ifndef RECT
+	#define RECT(point1, point2) (Rect { point1, point2 })
+#endif
 
-		#ifndef ELLIPSE
-			#define ELLIPSE glibCreateEllipse
-		#endif
-	#else
-		#ifndef POINT
-			#define POINT(x, y) (Point { x, y })
-		#endif
+#ifndef ELLIPSE
+	#define ELLIPSE(center, radius_x, radius_y) (Ellipse { center, radius_x, radius_y })
+#endif
 
-		#ifndef COLOR
-			#define COLOR(a, r, g, b) (ARGB { a, r, g, b })
-		#endif
+#ifndef CIRCLE
+	#define CIRCLE(center, radius) ELLIPSE(center, radius, radius)
+#endif
 
-		#ifndef LINE
-			#define LINE(point1, point2) (Line { point1, point2 })
-		#endif
-
-		#ifndef RECT
-			#define RECT(point1, point2) (Rect { point1, point2 })
-		#endif
-
-		#ifndef TRIANGLE
-			#define TRIANGLE(point1, point2, point3) (Triangle { point1, point2, point3 })
-		#endif
-
-		#ifndef ELLIPSE
-			#define ELLIPSE(center, radius_x, radius_y) (Ellipse { center, radius_x, radius_y })
-		#endif
-	#endif
-
-	#ifndef CIRCLE
-		#define CIRCLE(center, radius) ELLIPSE(center, radius, radius)
-	#endif
-
-	#define COLOR_BLACK COLOR(255, 0, 0, 0)
-	#define COLOR_WHITE COLOR(255, 255, 255, 255)
-	#define COLOR_RED COLOR(255, 255, 0, 0)
-	#define COLOR_GREEN COLOR(255, 0, 255, 0)
-	#define COLOR_BLUE COLOR(255, 0, 0, 255)
-	#define COLOR_PURPLE COLOR(255, 150, 0, 150)
-	#define COLOR_YELLOW COLOR(255, 255, 255, 0)
-	#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
+#define COLOR_BLACK COLOR(0, 0, 0, 255)
+#define COLOR_WHITE COLOR(255, 255, 255, 255)
+#define COLOR_RED COLOR(255, 0, 0, 255)
+#define COLOR_GREEN COLOR(0, 255, 0, 255)
+#define COLOR_BLUE COLOR(0, 0, 255, 255)
+#define COLOR_PURPLE COLOR(150, 0, 150, 255)
+#define COLOR_YELLOW COLOR(255, 255, 0, 255)
+#define COLOR_TRANSPARENT COLOR(0, 0, 0, 0)
 
 #endif
 
@@ -118,14 +90,16 @@
 #define FREE_WORD(_word, byte_ptr) do { *byte_ptr = (byte)(_word & 0xff); *(byte_ptr + 1) = (byte)((_word >> 8) & 0xff); } while(0)
 #define FREE_DWORD(_dword, byte_ptr) do { *byte_ptr = (byte)(_dword & 0xff); *(byte_ptr + 1) = (byte)((_dword >> 8) & 0xff); \
 								*(byte_ptr + 2) = (byte)((_dword >> 16) & 0xff); *(byte_ptr + 3) = (byte)((_dword >> 24) & 0xff);} while(0)
-	
-#ifndef __cplusplus
-	#ifndef __GLIB_SRC
-		typedef struct Line Line;
-		typedef struct Rect Rect;
-		typedef struct Ellipse Ellipse;
-		typedef struct Triangle Triangle;
-	#endif
+
+#ifndef RELEASE
+	#define RELEASE(ptr) do { if(ptr != NULL) { ptr->Release(); ptr = NULL; } } while(0)
+#endif
+
+#ifndef __GLIB_SRC
+	typedef struct Line Line;
+	typedef struct Rect Rect;
+	typedef struct Ellipse Ellipse;
+	typedef struct Triangle Triangle;
 #endif
 
 #define MOUSE_LEFTBUTTON		0x0001
@@ -308,8 +282,8 @@
 #define KEY_OEM_102				0x00e2		//клавиша «<>» или «\ | » клавиша на клавиатуре RT 102 - клавишная
 #define KEY_PROCESSKEY			0x00e5
 #define KEY_PACKET				0x00e7		//используется для передачи символов Юникода, как если бы они были нажатиями клавиш.
-	//Ключ VK_PACKET - это младшее слово 32 - битного значения виртуального ключа, используемого 
-	//для не клавиатурных методов ввода.Символ Unicode - это высокое слово.
+											//Ключ VK_PACKET - это младшее слово 32 - битного значения виртуального ключа, используемого 
+											//для не клавиатурных методов ввода.Символ Unicode - это высокое слово.
 
 #define KEY_ATTN				0x00f6
 #define KEY_CRSEL				0x00f7
