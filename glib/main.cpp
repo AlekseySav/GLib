@@ -1,31 +1,30 @@
 #include <glib/glib.h>
 #include <glib/std.h>
 
-Bitmap b = glibInitBitmap();
+Bitmap b = glibBitmap();
 Image image;
 
 void draw(EventArgs * args)
 {
 	Window w = WINDOW_HANDLE(args->handle);
-	Image im = glibCreateImage(w->width, w->height);
-	glibFillImage(im, COLOR_BLUE);
-	im->DrawImage(image, POINT(100, 100), POINT(200, 200));
-
-	glibDrawImage(im, w, true);
+	glibDrawImage(image, w);
 }
 
 void close(EventArgs * args)
 {
-	RELEASE(image);
+	RELEASE(image); b->ptr = NULL;
 	RELEASE(b);
 }
 
 int gmain(char * argv[], int argc)
 {
-	b->LoadFromFile(TEXT("D:\\projects\\glib\\Debug\\1.bmp"));
-	image = glibCreateImage(b);
+	image = glibCreateImage(535, 350);
+	glibFillImage(image, COLOR_RED);
+	image->DrawEllipse(ELLIPSE(POINT(100, 100), 100, 100), COLOR(0, 0, 255, 150), 2L);
+	b->CreateBitmap(image->image, 535, 350);
+	b->Write(TEXT("1.bmp"));
 
-	Window w = glibCreateWindow(TEXT("glib"), 100, 100, 500, 350, STYLE_NORMAL, NULL);
+	Window w = glibCreateWindow(TEXT("glib"), 100, 100, 535, 350, STYLE_NORMAL, NULL);
 	if WINDOW_FAILED(w) return 1;
 
 	glibSetWindowEvent(w, draw, EVENT_DRAW);

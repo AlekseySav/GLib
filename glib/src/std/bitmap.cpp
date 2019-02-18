@@ -76,69 +76,133 @@ void Bitmap__::CreateBitmap(byte * ptr, long width, long height)
 
 void Bitmap__::LoadFromFile(char * file, u_int32 format)
 {
-	FILE * f = fopen(file, "rt");
-
-	byte arr[54];
-	fread(arr, 1, 54, f);
-
-	glibCreateBMFH(&(this->file), arr);
-	glibCreateBMIH(&(this->info), arr + 14);
-
-	word bits = this->info.biBitCount / 8;
-	long size = this->info.biWidth * this->info.biHeight * bits;
-
-	palette = (byte *)malloc(this->file.bfOffBits - 54);
-	fread(palette, 1, this->file.bfOffBits - 54, f);
-
-	if (info.biBitCount == 32 || info.biBitCount == 24)
+	if (format == FORMAT_BITMAP)
 	{
-		free(palette);
-		palette = NULL;
+		FILE * f = fopen(file, "rb");
+
+		byte arr[54];
+		fread(arr, 1, 54, f);
+
+		glibCreateBMFH(&(this->file), arr);
+		glibCreateBMIH(&(this->info), arr + 14);
+
+		word bits = this->info.biBitCount / 8;
+		long size = this->info.biWidth * this->info.biHeight * bits;
+
+		palette = (byte *)malloc(this->file.bfOffBits - 54);
+		fread(palette, 1, this->file.bfOffBits - 54, f);
+
+		if (info.biBitCount == 32 || info.biBitCount == 24)
+		{
+			free(palette);
+			palette = NULL;
+		}
+
+		info.biSizeImage = max(info.biSizeImage, (unsigned)size);
+
+		byte * image = (byte *)malloc(info.biSizeImage);
+		byte * tofree = image;
+		fread(image, 1, info.biSizeImage, f);
+		fclose(f);
+
+		this->ptr = (byte *)malloc(size);
+		byte * _ptr = this->ptr;
+
+		int add = 4 - ((this->info.biWidth * bits) % 4); if (add == 4) add = 0;
+		image += info.biSizeImage - info.biWidth * bits - add;
+		int sub = 2 * info.biWidth * bits + add;
+		for (int y = 0; y < info.biHeight; y++)
+		{
+			for (int x = 0; x < info.biWidth; x++, _ptr += bits, image += bits)
+				switch (info.biBitCount)
+				{
+				case 0: return;
+				case 1: *_ptr = *image; _ptr++; image++; break;
+				case 4: *_ptr = *image; _ptr++; image++; break;
+				case 8: *_ptr = *image; break;
+				case 16: *(word *)_ptr = *(word *)image; _ptr++; image++; break;
+				case 24:
+					*(_ptr) = *(image + 2);
+					*(_ptr + 1) = *(image + 1);
+					*(_ptr + 2) = *(image);
+					break;
+				case 32:
+					*(_ptr) = *(image + 3);
+					*(_ptr + 1) = *(image + 2);
+					*(_ptr + 2) = *(image + 1);
+					*(_ptr + 3) = *(image);
+					break;
+				}
+			image -= (sub);
+		}
+
+		free(tofree);
 	}
-
-	info.biSizeImage = max(info.biSizeImage, (unsigned)size);
-
-	byte * image = (byte *)malloc(info.biSizeImage);
-	byte * tofree = image;
-	fread(image, 1, info.biSizeImage, f);
-
-	this->ptr = (byte *)malloc(size);
-	byte * _ptr = this->ptr;
-
-	int add = 4 - ((this->info.biWidth * bits) % 4); if (add == 4) add = 0;
-	image += info.biSizeImage - info.biWidth * bits - add;
-	int sub = 2 * info.biWidth * bits + add;
-	for (int y = 0; y < info.biHeight; y++)
-	{
-		for (int x = 0; x < info.biWidth; x++, _ptr += bits, image += bits)
-			switch (info.biBitCount)
-			{
-			case 0: return;
-			case 1: *_ptr = *image; _ptr++; image++; break;
-			case 4: *_ptr = *image; _ptr++; image++; break;
-			case 8: *_ptr = *image; break;
-			case 16: *(word *)_ptr = *(word *)image; _ptr++; image++; break;
-			case 24:
-				*(_ptr) = *(image + 2);
-				*(_ptr + 1) = *(image + 1);
-				*(_ptr + 2) = *(image);
-				break;
-			case 32:
-				*(_ptr) = *(image + 3);
-				*(_ptr + 1) = *(image + 2);
-				*(_ptr + 2) = *(image + 1);
-				*(_ptr + 3) = *(image);
-				break;
-			}
-		image -= (sub);
-	}
-
-	free(tofree);
 }
 
 void Bitmap__::Write(char * file, u_int32 format)
 {
+	if (format == FORMAT_BITMAP)
+	{
 
+		byte arr[54];
+
+		glibFreeBMFH(&(this->file), arr);
+		glibFreeBMIH(&(this->info), arr + 14);
+		
+		word bits = this->info.biBitCount / 8;
+		long size = this->info.biWidth * this->info.biHeight * bits;
+		
+		info.biSizeImage = max(info.biSizeImage, (unsigned)size);
+
+		byte * _ptr = (byte *)malloc(info.biSizeImage);
+		byte * tofree = _ptr;
+
+		byte * image = this->ptr;
+
+		int add = 4 - ((this->info.biWidth * bits) % 4); if (add == 4) add = 0;
+		_ptr += info.biSizeImage - info.biWidth * bits - add;
+		int sub = 2 * info.biWidth * bits + add;
+		for (int y = 0; y < info.biHeight; y++)
+		{
+			for (int x = 0; x < info.biWidth; x++, _ptr += bits, image += bits)
+				switch (info.biBitCount)
+				{
+				case 0: return;
+				case 1: *_ptr = *image; _ptr++; image++; break;
+				case 4: *_ptr = *image; _ptr++; image++; break;
+				case 8: *_ptr = *image; break;
+				case 16: *(word *)_ptr = *(word *)image; _ptr++; image++; break;
+				case 24:
+					*(_ptr) = *(image + 2);
+					*(_ptr + 1) = *(image + 1);
+					*(_ptr + 2) = *(image);
+					break;
+				case 32:
+					*(_ptr) = *(image + 3);
+					*(_ptr + 1) = *(image + 2);
+					*(_ptr + 2) = *(image + 1);
+					*(_ptr + 3) = *(image);
+					break;
+				}
+			_ptr -= (sub);
+		}
+
+		FILE * f = fopen(file, "wb");
+
+		fwrite(arr, 1, 54, f);
+
+		if (info.biBitCount != 32 && info.biBitCount != 24 && palette != NULL)
+		{
+			palette = (byte *)malloc(this->file.bfOffBits - 54);
+			fwrite(palette, 1, this->file.bfOffBits - 54, f);
+		}
+
+		fwrite(tofree, 1, info.biSizeImage, f);
+
+		fclose(f);
+		free(tofree);
+	}
 }
 
 void Bitmap__::Release()
@@ -146,37 +210,4 @@ void Bitmap__::Release()
 	if (ptr != NULL) free(this->ptr);
 	if (palette != NULL) free(this->palette);
 	free(this);
-}
-
-void Bitmap__::ChangeBitType(int bitcount)
-{
-	if (this->info.biBitCount == bitcount) return;
-	if (bitcount < 24) return;
-
-	long size = this->info.biWidth * this->info.biHeight * bitcount / 8;
-
-	byte * arr = (byte *)malloc((size_t)size);
-	byte * ptr = this->ptr;
-	
-	void * tofree = ptr;
-	this->ptr = arr;
-
-	if (this->info.biBitCount == 24)
-	{
-		int add = this->info.biWidth % 4;
-		for (int y = 0; y < this->info.biHeight; y++)
-		{
-			for (int x = 0; x < this->info.biWidth; x++, ptr += 3, arr += 4)
-			{
-				*(arr) = 255;
-				*(arr + 1) = *(ptr);
-				*(arr + 2) = *(ptr + 1);
-				*(arr + 3) = *(ptr + 2);
-			}
-			ptr += add;
-		}
-	}
-
-	this->info.biBitCount = bitcount;
-	free(tofree);
 }

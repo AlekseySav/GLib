@@ -51,12 +51,9 @@ typedef struct Bitmap__ {
 	void LoadFromFile(char * file, u_int32 format = FORMAT_BITMAP);
 	void Write(char * file, u_int32 format = FORMAT_BITMAP);
 
-	void ChangeBitType(int bitcount);
-
 	void Release();
 } * Bitmap;
 
-#define glibInitBitmap() ((Bitmap)(Bitmap__ *)malloc(sizeof(struct Bitmap__)))
-#define glibStandardBitmap(b) do { b.ChangeBitType(32); } while(0)
+#define glibBitmap() ((Bitmap)(Bitmap__ *)malloc(sizeof(struct Bitmap__)))
 
 #endif
