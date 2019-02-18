@@ -71,7 +71,9 @@ void Bitmap__::CreateBitmap(byte * ptr, long width, long height)
 	this->info.biClrImportant = 0;
 
 	this->palette = NULL;
-	this->ptr = ptr;
+
+	this->ptr = (byte *)malloc(size);
+	memcpy(this->ptr, ptr, size);
 }
 
 void Bitmap__::LoadFromFile(char * file, u_int32 format)

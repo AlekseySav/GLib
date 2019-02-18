@@ -262,7 +262,7 @@ LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void WIN_DrawWindow(Image im, Window w, Point min, Point max)
 {
-	byte * ptr = (byte *)malloc(im->width * im->height * 4);
+	byte * ptr = (byte *)malloc((max.x - min.x) * (max.y - min.y) * 4);
 	if (ptr == NULL) return;
 
 	HDC hdc;
@@ -273,15 +273,19 @@ void WIN_DrawWindow(Image im, Window w, Point min, Point max)
 	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, max.x - min.x, max.y - min.y);
 	if (ptr == NULL) return;
 
-	u_int add = 0;
+	u_int add = 0, iadd = (min.y * im->width + min.x) * 4;
+	u_int addad = (min.x - max.x + im->width) * 4;
 	for (long y = min.y; y < (long)max.y; y++)
-		for (long x = min.x; x < (long)max.x; x++, add += 4)
+	{
+		for (long x = min.x; x < (long)max.x; x++, add += 4, iadd += 4)
 		{
-			*(ptr + add) = *(im->image + add + 3);
-			*(ptr + add + 1) = *(im->image + add + 2);
-			*(ptr + add + 2) = *(im->image + add + 1);
-			*(ptr + add + 3) = *(im->image + add);
+			*(ptr + add) = *(im->image + iadd + 3);
+			*(ptr + add + 1) = *(im->image + iadd + 2);
+			*(ptr + add + 2) = *(im->image + iadd + 1);
+			*(ptr + add + 3) = *(im->image + iadd);
 		}
+		iadd += addad;
+	}
 
 	SetBitmapBits(hBitmap, (max.x - min.x) * (max.y - min.y) * 4, ptr);
 

@@ -96,18 +96,18 @@ void Image__::DrawPoint(Point point, ARGB color)
 	*target = glibMerge(*target, color);
 }
 
-void Image__::DrawImage(struct Image__ * image, Point start, Point end)
+void Image__::DrawImage(struct Image__ * image, Point start, Point end, Point sub)
 {
 	end.x = min(end.x, start.x + image->width);
 	end.y = min(end.y, start.y + image->height);
 
-	int32 ix = 0, iy = 0;
+	int32 ix = sub.x, iy = sub.y;
 
 	for (int32 y = start.y; y < end.y; y++, iy++)
 	{
 		for (int32 x = start.x; x < end.x; x++, ix++)
 			DrawPoint(Point{ x, y }, *image->GetPixel(Point{ ix, iy }));
-		ix = 0;
+		ix = sub.x;
 	}
 }
 
