@@ -116,10 +116,16 @@ typedef void * Handle;
 #include "sys/text.h"
 #include "sys/window.h"
 
+#else
+	#undef _GLIB
 #endif
 #else
-#undef _GLIB
+	#undef _GLIB
 #endif
 #else
-#undef _GLIB
+	#undef _GLIB
+#endif
+
+#ifndef _GLIB
+	#error can't implement glib
 #endif

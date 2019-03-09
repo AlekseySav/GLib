@@ -48,11 +48,11 @@
 	#endif
 #endif
 
-#ifndef WINDOW
+#ifndef WINDOW_HANDLE
 	#ifdef __cplusplus
-		#define WINDOW(handle) ((Window)((Window__ *)((void *)((Handle)(handle)))))
+		#define WINDOW_HANDLE(handle) ((Window)((Window__ *)((void *)((Handle)(handle)))))
 	#else
-		#define WINDOW(handle) ((struct Window__ *)((Handle)(handle)))
+		#define WINDOW_HANDLE(handle) ((struct Window__ *)((Handle)(handle)))
 	#endif
 #endif
 

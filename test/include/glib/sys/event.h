@@ -8,8 +8,8 @@
 #define EVENT_CLOSED		0x0008
 #define EVENT_RESIZE		0x0010		//get flag: resize type (defined in event.h)
 #define EVENT_MOVED			0x0020
-#define EVENT_REDRAW		0x0040
-#define EVENT_DRAWING		0x0041		//EVENT_BASIC | EVENT_REDRAW
+#define EVENT_DRAW			0x0040
+#define EVENT_REDRAW		0x0041		// EVENT_DRAW | EVENT_BASIC
 #define EVENT_MOUSEDOWN		0x0080		//get flag: mouse button (defined in std.h)
 #define EVENT_CLICK			EVENT_MOUSEDOWN
 #define EVENT_MOUSEUP		0x0100		//get flag: mouse button (defined in std.h)

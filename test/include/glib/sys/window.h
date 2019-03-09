@@ -47,6 +47,8 @@ EXTERN int glibCloseWindow(Window w);
 #define STYLE_OVERLAPPED		0x00000040
 
 #define STYLE_RESIZABLE			0x00000030	//(STYLE_THICKFRAME | STYLE_MAXIMIZEBLE)
+#define STYLE_NORESIZE			(0xffffffff ^ STYLE_RESIZABLE)	// use w->flags &= STYLE_NORESIZE, 
+																// except of glibAddWindowFlag(w, STYLE_NORESIZE)
 #define STYLE_NORMAL			0x00000079	//(STYLE_BASIC | STYLE_OVERLAPPED | STYLE_MINIMIZEABLE | STYLE_RESIZABLE)
 
 #define STATE_NORMAL			0x00000000
@@ -66,10 +68,10 @@ EXTERN bool glibAddWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibRemoveWindowFlag(u_int32 flag, Window w);
 EXTERN bool glibCorrectWindowsFlag(u_int32 flags);
 
-#define RELOAD_POSITION			0x00000001
-#define RELOAD_TITLE			0x00000002
-#define RELOAD_FLAGS			0x00000004
-#define RELOAD_ALL				0x00000007	//(RELOAD_TITLE | RELOAD_FLAGS | RELOAD_POSITION)
+#define RELOAD_POSITION			1
+#define RELOAD_TITLE			2
+#define RELOAD_FLAGS			4
+#define RELOAD_ALL				7	//(RELOAD_TITLE | RELOAD_FLAGS | RELOAD_POSITION)
 
 EXTERN int glibReloadWindow(Window w, int reload);
 
