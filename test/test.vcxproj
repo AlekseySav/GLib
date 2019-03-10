@@ -152,6 +152,7 @@
     <ClInclude Include="include\glib\sys\bitmap.h" />
     <ClInclude Include="include\glib\sys\event.h" />
     <ClInclude Include="include\glib\sys\graphics.h" />
+    <ClInclude Include="include\glib\sys\handles.h" />
     <ClInclude Include="include\glib\sys\text.h" />
     <ClInclude Include="include\glib\sys\window.h" />
     <ClInclude Include="src\glib_src.h" />

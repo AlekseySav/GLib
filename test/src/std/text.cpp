@@ -7,9 +7,18 @@ void glibSetLanguage(u_int32 lang)
 	glib_language = lang;
 }
 
-void glibDrawText(Image im, Point pos, char * str, u_int32 format, ARGB font, ARGB back)
+inline Text glibCreateText(char * str, ARGB font, ARGB back)
 {
-	EX_DrawText(im, pos, str, format, font, back);
+	Text t;
+	t.str = str;
+	t.font = font;
+	t.back = back;
+	return t;
+}
+
+void glibDrawText(Image im, Point pos, Text text)
+{
+	EX_DrawText(im, pos, text.str, -1, text.font, text.back);
 }
 
 w_char glibConvertCharacter(char c)

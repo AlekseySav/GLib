@@ -29,6 +29,10 @@
 	#define CIRCLE(center, radius) ELLIPSE(center, radius, radius)
 #endif
 
+#ifndef TEXT
+	#define TEXT glibCreateText
+#endif
+
 #define COLOR_BLACK COLOR(0, 0, 0, 255)
 #define COLOR_WHITE COLOR(255, 255, 255, 255)
 #define COLOR_RED COLOR(255, 0, 0, 255)
@@ -40,11 +44,11 @@
 
 #endif
 
-#ifndef TEXT
+#ifndef STR
 	#ifdef __cplusplus
-		#define TEXT(_const_char_ptr_) ((char *)((void *)((const char *)(_const_char_ptr_))))
+		#define STR(_const_char_ptr_) ((char *)((void *)((const char *)(_const_char_ptr_))))
 	#else
-		#define TEXT(_const_char_ptr_) ((char *)(_const_char_ptr_))
+		#define STR(_const_char_ptr_) ((char *)(_const_char_ptr_))
 	#endif
 #endif
 

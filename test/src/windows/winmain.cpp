@@ -349,7 +349,7 @@ int WIN_CreateConsole()
 	return 0;
 }
 
-HBITMAP WIN_HBITMAP(HDC dc, LPWSTR text, Image im, ARGB font, ARGB back)
+HBITMAP WIN_HBITMAP(HDC dc, Point pos, LPWSTR text, Image im, ARGB font, ARGB back)
 {
 	byte * ptr = (byte *)malloc(im->width * im->height * 4);
 
@@ -376,7 +376,7 @@ HBITMAP WIN_HBITMAP(HDC dc, LPWSTR text, Image im, ARGB font, ARGB back)
 		SetBkColor(compatibleDeviceContext, RGB(back.r, back.g, back.b));
 	else
 		SetBkMode(compatibleDeviceContext, TRANSPARENT);
-	TextOut(compatibleDeviceContext, 0, 0, text, strlen(text));
+	TextOut(compatibleDeviceContext, pos.x, pos.y, text, strlen(text));
 	
 	SelectObject(compatibleDeviceContext, previousSelectedHandle);
 	DeleteDC(compatibleDeviceContext);
@@ -390,7 +390,7 @@ void WIN_DrawText(Image im, Point pos, char * str, u_int32 format, ARGB font, AR
 	w_char * wstr = (w_char *)malloc((strlen(str) + 1) * sizeof(w_char));
 	glibConvertString(str, wstr);
 
-	HBITMAP capturedBitmap = WIN_HBITMAP(deviceContext, wstr, im, font, back);
+	HBITMAP capturedBitmap = WIN_HBITMAP(deviceContext, pos, wstr, im, font, back);
 	free(wstr);
 
 	BITMAPINFO bitmapInfo = { 0 };

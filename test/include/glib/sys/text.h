@@ -11,7 +11,15 @@ EXTERN void glibSetLanguage(u_int32 lang);
 
 #define glibSetDefaultLanguage() glibSetLanguage(LANGUAGE_DEFAULT)
 
-EXTERN void glibDrawText(Image im, Point pos, char * str, u_int32 format, ARGB font = ARGB{ 255, 0, 0, 0 }, ARGB back = ARGB{ 0, 0, 0, 0 });
+struct Text {
+	char * str;
+	ARGB font;
+	ARGB back;
+};
+
+EXTERN inline Text glibCreateText(char * str, ARGB font = ARGB{ 255, 0, 0, 0 }, ARGB back = ARGB{ 0, 0, 0, 0 });
+
+EXTERN void glibDrawText(Image im, Point pos, Text text);
 
 typedef wchar_t w_char;
 EXTERN w_char glibConvertCharacter(char c);

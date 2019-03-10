@@ -106,26 +106,26 @@ typedef unsigned short int word;
 EXTERN int glibLoop();
 EXTERN int glibCreateConsole();
 
+typedef void * Handle;
+
 LINK_C int gmain(char * argv[], int argc); //main function
 
-typedef void * Handle;
+#else
+	#undef _GLIB
+#endif
+#else
+	#undef _GLIB
+#endif
 
 #include "sys/event.h"
 #include "sys/bitmap.h"
 #include "sys/graphics.h"
 #include "sys/text.h"
+#include "sys/handles.h"
 #include "sys/window.h"
 
-#else
-	#undef _GLIB
-#endif
-#else
-	#undef _GLIB
-#endif
-#else
-	#undef _GLIB
+#ifndef _GLIB
+#error can't implement glib
 #endif
 
-#ifndef _GLIB
-	#error can't implement glib
 #endif
