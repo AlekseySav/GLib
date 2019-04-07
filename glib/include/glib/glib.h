@@ -123,3 +123,7 @@ typedef void * Handle;
 #else
 #undef _GLIB
 #endif
+
+#ifndef _GLIB
+	#error Can't implement GLib
+#endif
