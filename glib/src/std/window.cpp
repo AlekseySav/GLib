@@ -27,8 +27,7 @@ bool glibAddWindowFlag(u_int32 flag, Window w)
 
 bool glibRemoveWindowFlag(u_int32 flag, Window w)
 {
-	u_int32 rm = (-1) ^ flag;
-	w->flags &= rm;
+	w->flags &= ~flag;
 	return glibCheckWindow(w);
 }
 
